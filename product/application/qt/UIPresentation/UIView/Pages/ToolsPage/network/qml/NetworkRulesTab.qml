@@ -91,17 +91,77 @@ Item {
                     UTText { text: qsTr("Match requests by URL pattern and return a custom response. Mocked requests will appear in Capture with a \"MOCK\" tag."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; wrapMode: Text.WordWrap; Layout.fillWidth: true }
                     GridLayout {
                         columns: 4; columnSpacing: 8; rowSpacing: 6; Layout.fillWidth: true
-                        UTText { text: qsTr("URL Pattern:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                        UTTextField { id: mockUrl; Layout.fillWidth: true; Layout.columnSpan: 2; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("e.g. /api/user.*") }
+                        UTText {
+                            id: mockUrlLabel
+                            text: qsTr("URL Pattern:")
+                            fontEnum: UIFontToken.Body_Text
+                            colorEnum: UIColorToken.Content_Text
+                        }
+                        UTTextField {
+                            id: mockUrl
+                            Accessible.name: mockUrlLabel.text
+                            Layout.fillWidth: true
+                            Layout.columnSpan: 2
+                            fontEnum: UIFontToken.Monospace_Text
+                            placeholderText: qsTr("e.g. /api/user.*")
+                        }
                         UTButton { appearance: UTButton.Secondary; text: qsTr("🧪 Test"); onClicked: root.testPattern(mockUrl.text) }
-                        UTText { text: qsTr("Status:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                        UTTextField { id: mockStatus; implicitWidth: 70; fontEnum: UIFontToken.Monospace_Text; placeholderText: "200"; validator: IntValidator { bottom: 100; top: 599 } }
-                        UTText { text: qsTr("Content-Type:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                        UTTextField { id: mockCt; implicitWidth: 180; fontEnum: UIFontToken.Monospace_Text; placeholderText: "application/json"; text: "application/json" }
-                        UTText { text: qsTr("Headers:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                        UTTextField { id: mockHeaders; Layout.fillWidth: true; Layout.columnSpan: 3; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("X-Custom: value  (one per line or comma-separated)") }
-                        UTText { text: qsTr("Body:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                        UTTextField { id: mockBody; Layout.fillWidth: true; Layout.columnSpan: 3; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("{\"message\": \"mocked\"}") }
+                        UTText {
+                            id: mockStatusLabel
+                            text: qsTr("Status:")
+                            fontEnum: UIFontToken.Body_Text
+                            colorEnum: UIColorToken.Content_Text
+                        }
+                        UTTextField {
+                            id: mockStatus
+                            Accessible.name: mockStatusLabel.text
+                            implicitWidth: 70
+                            fontEnum: UIFontToken.Monospace_Text
+                            placeholderText: "200"
+                            validator: IntValidator { bottom: 100; top: 599 }
+                        }
+                        UTText {
+                            id: mockContentTypeLabel
+                            text: qsTr("Content-Type:")
+                            fontEnum: UIFontToken.Body_Text
+                            colorEnum: UIColorToken.Content_Text
+                        }
+                        UTTextField {
+                            id: mockCt
+                            Accessible.name: mockContentTypeLabel.text
+                            implicitWidth: 180
+                            fontEnum: UIFontToken.Monospace_Text
+                            placeholderText: "application/json"
+                            text: "application/json"
+                        }
+                        UTText {
+                            id: mockHeadersLabel
+                            text: qsTr("Headers:")
+                            fontEnum: UIFontToken.Body_Text
+                            colorEnum: UIColorToken.Content_Text
+                        }
+                        UTTextField {
+                            id: mockHeaders
+                            Accessible.name: mockHeadersLabel.text
+                            Layout.fillWidth: true
+                            Layout.columnSpan: 3
+                            fontEnum: UIFontToken.Monospace_Text
+                            placeholderText: qsTr("X-Custom: value  (one per line or comma-separated)")
+                        }
+                        UTText {
+                            id: mockBodyLabel
+                            text: qsTr("Body:")
+                            fontEnum: UIFontToken.Body_Text
+                            colorEnum: UIColorToken.Content_Text
+                        }
+                        UTTextField {
+                            id: mockBody
+                            Accessible.name: mockBodyLabel.text
+                            Layout.fillWidth: true
+                            Layout.columnSpan: 3
+                            fontEnum: UIFontToken.Monospace_Text
+                            placeholderText: qsTr("{\"message\": \"mocked\"}")
+                        }
                     }
                     RowLayout {
                         spacing: 8
@@ -127,7 +187,14 @@ Item {
                                     Rectangle { width: 40; height: 18; radius: 3; color: UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Accent_Background, UIColorState.Normal); UTText { anchors.centerIn: parent; text: modelData.status_code || "200"; fontEnum: UIFontToken.Caption_Text; color: UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Text, UIColorState.Normal) } }
                                     UTText { Layout.fillWidth: true; text: modelData.url_pattern || ""; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
                                     UTText { visible: (modelData.headers || "").length > 0; text: "📋"; font.pixelSize: 12 } // emoji glyph, not tokenized
-                                    UTButton { appearance: UTButton.Destructive; text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeMockRule(index); mockListView.model = root.controller.rulesManager.getMockRules() } }
+                                    UTButton {
+                                        appearance: UTButton.Destructive
+                                        text: "✕"
+                                        Accessible.name: qsTr("Remove rule: %1").arg(modelData.url_pattern)
+                                        implicitWidth: 28
+                                        implicitHeight: 24
+                                        onClicked: { root.controller.rulesManager.removeMockRule(index); mockListView.model = root.controller.rulesManager.getMockRules() }
+                                    }
                                 }
                             }
                             UTText { anchors.centerIn: parent; visible: parent.count === 0; text: qsTr("No mock rules. Add one above.\nDouble-click a rule to view details."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Secondary_Text; horizontalAlignment: Text.AlignHCenter }
@@ -153,8 +220,19 @@ Item {
 
                     RowLayout {
                         spacing: 8; Layout.fillWidth: true
-                        UTTextField { id: bpUrl; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("URL pattern (regex)") }
-                        UTComboBox { id: bpMethod; model: ["ANY","GET","POST","PUT","DELETE"]; implicitWidth: 100 }
+                        UTTextField {
+                            id: bpUrl
+                            Accessible.name: placeholderText
+                            Layout.fillWidth: true
+                            fontEnum: UIFontToken.Monospace_Text
+                            placeholderText: qsTr("URL pattern (regex)")
+                        }
+                        UTComboBox {
+                            id: bpMethod
+                            Accessible.name: qsTr("HTTP method") + ": " + bpMethod.displayText
+                            model: ["ANY","GET","POST","PUT","DELETE"]
+                            implicitWidth: 100
+                        }
                         UTButton { appearance: UTButton.Primary; text: qsTr("+ Add"); onClicked: { root.controller.rulesManager.addBreakpointRule(bpUrl.text, bpMethod.currentText); bpUrl.text=""; bpListView.model = root.controller.rulesManager.getBreakpointRules(); if (!root.controller.interceptEnabled) root.controller.interceptEnabled = true } }
                         UTButton { appearance: UTButton.Secondary; text: qsTr("🧪 Test"); onClicked: root.testPattern(bpUrl.text) }
                         Item { Layout.fillWidth: true }
@@ -184,7 +262,14 @@ Item {
                                         UTText { anchors.centerIn: parent; text: modelData.method || "ANY"; fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Badge_Text }
                                     }
                                     UTText { Layout.fillWidth: true; text: modelData.url_pattern || ""; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
-                                    UTButton { appearance: UTButton.Destructive; text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeBreakpointRule(index); bpListView.model = root.controller.rulesManager.getBreakpointRules() } }
+                                    UTButton {
+                                        appearance: UTButton.Destructive
+                                        text: "✕"
+                                        Accessible.name: qsTr("Remove rule: %1").arg(modelData.url_pattern)
+                                        implicitWidth: 28
+                                        implicitHeight: 24
+                                        onClicked: { root.controller.rulesManager.removeBreakpointRule(index); bpListView.model = root.controller.rulesManager.getBreakpointRules() }
+                                    }
                                 }
                             }
                             UTText { anchors.centerIn: parent; visible: parent.count === 0; text: qsTr("No breakpoint rules."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Secondary_Text }
@@ -272,7 +357,13 @@ Item {
                     UTText { text: qsTr("Block matching requests entirely. They will receive a 403 response."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; wrapMode: Text.WordWrap; Layout.fillWidth: true }
                     RowLayout {
                         spacing: 8; Layout.fillWidth: true
-                        UTTextField { id: blUrl; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("URL pattern to block (regex)") }
+                        UTTextField {
+                            id: blUrl
+                            Accessible.name: placeholderText
+                            Layout.fillWidth: true
+                            fontEnum: UIFontToken.Monospace_Text
+                            placeholderText: qsTr("URL pattern to block (regex)")
+                        }
                         UTButton { appearance: UTButton.Primary; text: qsTr("+ Add"); onClicked: { root.controller.rulesManager.addBlacklistRule(blUrl.text); blUrl.text=""; blListView.model = root.controller.rulesManager.getBlacklistRules() } }
                     }
                     Rectangle {
@@ -287,7 +378,14 @@ Item {
                                     anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
                                     Rectangle { width: 14; height: 14; radius: 7; color: UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Text, UIColorState.Normal); anchors.verticalCenter: parent.verticalCenter }
                                     UTText { Layout.fillWidth: true; text: modelData.url_pattern || modelData; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
-                                    UTButton { appearance: UTButton.Destructive; text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeBlacklistRule(index); blListView.model = root.controller.rulesManager.getBlacklistRules() } }
+                                    UTButton {
+                                        appearance: UTButton.Destructive
+                                        text: "✕"
+                                        Accessible.name: qsTr("Remove rule: %1").arg(modelData.url_pattern || modelData)
+                                        implicitWidth: 28
+                                        implicitHeight: 24
+                                        onClicked: { root.controller.rulesManager.removeBlacklistRule(index); blListView.model = root.controller.rulesManager.getBlacklistRules() }
+                                    }
                                 }
                             }
                             UTText { anchors.centerIn: parent; visible: parent.count === 0; text: qsTr("No blacklist rules."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Secondary_Text }
@@ -302,8 +400,20 @@ Item {
                     UTText { text: qsTr("Serve a local file instead of the remote response for matching URLs."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; wrapMode: Text.WordWrap; Layout.fillWidth: true }
                     RowLayout {
                         spacing: 8; Layout.fillWidth: true
-                        UTTextField { id: mlUrl; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("URL pattern (regex)") }
-                        UTTextField { id: mlPath; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("Local file path") }
+                        UTTextField {
+                            id: mlUrl
+                            Accessible.name: placeholderText
+                            Layout.fillWidth: true
+                            fontEnum: UIFontToken.Monospace_Text
+                            placeholderText: qsTr("URL pattern (regex)")
+                        }
+                        UTTextField {
+                            id: mlPath
+                            Accessible.name: placeholderText
+                            Layout.fillWidth: true
+                            fontEnum: UIFontToken.Monospace_Text
+                            placeholderText: qsTr("Local file path")
+                        }
                         UTButton { appearance: UTButton.Primary; text: qsTr("+ Add"); onClicked: { root.controller.rulesManager.addMapLocalRule(mlUrl.text, mlPath.text); mlUrl.text=""; mlPath.text=""; mlListView.model = root.controller.rulesManager.getMapLocalRules() } }
                     }
                     Rectangle {
@@ -317,7 +427,14 @@ Item {
                                 RowLayout {
                                     anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
                                     UTText { Layout.fillWidth: true; text: (modelData.url_pattern||"") + " → " + (modelData.local_path||""); fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
-                                    UTButton { appearance: UTButton.Destructive; text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeMapLocalRule(index); mlListView.model = root.controller.rulesManager.getMapLocalRules() } }
+                                    UTButton {
+                                        appearance: UTButton.Destructive
+                                        text: "✕"
+                                        Accessible.name: qsTr("Remove rule: %1").arg(modelData.url_pattern)
+                                        implicitWidth: 28
+                                        implicitHeight: 24
+                                        onClicked: { root.controller.rulesManager.removeMapLocalRule(index); mlListView.model = root.controller.rulesManager.getMapLocalRules() }
+                                    }
                                 }
                             }
                             UTText { anchors.centerIn: parent; visible: parent.count === 0; text: qsTr("No map local rules."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Secondary_Text }
@@ -348,7 +465,13 @@ Item {
 
                     RowLayout {
                         spacing: 8; Layout.fillWidth: true
-                        UTTextField { id: bypassHostInput; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("Host regex, e.g. (^|\\.)openai\\.com(:\\d+)?$") }
+                        UTTextField {
+                            id: bypassHostInput
+                            Accessible.name: qsTr("Bypass host pattern")
+                            Layout.fillWidth: true
+                            fontEnum: UIFontToken.Monospace_Text
+                            placeholderText: qsTr("Host regex, e.g. (^|\\.)openai\\.com(:\\d+)?$")
+                        }
                         UTButton {
                             appearance: UTButton.Primary
                             text: qsTr("+ Add")
@@ -403,6 +526,7 @@ Item {
                                     UTButton {
                                         appearance: UTButton.Destructive
                                         text: "✕"; implicitWidth: 28; implicitHeight: 24
+                                        Accessible.name: qsTr("Remove bypass host: %1").arg(modelData)
                                         onClicked: {
                                             var next = root.controller.rulesManager.getBypassHosts()
                                             next.splice(index, 1)
@@ -430,8 +554,20 @@ Item {
                     UTText { text: qsTr("Redirect matching requests to a different URL."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; wrapMode: Text.WordWrap; Layout.fillWidth: true }
                     RowLayout {
                         spacing: 8; Layout.fillWidth: true
-                        UTTextField { id: mrSrc; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("Source URL pattern (regex)") }
-                        UTTextField { id: mrDest; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("Destination URL") }
+                        UTTextField {
+                            id: mrSrc
+                            Accessible.name: placeholderText
+                            Layout.fillWidth: true
+                            fontEnum: UIFontToken.Monospace_Text
+                            placeholderText: qsTr("Source URL pattern (regex)")
+                        }
+                        UTTextField {
+                            id: mrDest
+                            Accessible.name: placeholderText
+                            Layout.fillWidth: true
+                            fontEnum: UIFontToken.Monospace_Text
+                            placeholderText: qsTr("Destination URL")
+                        }
                         UTButton { appearance: UTButton.Primary; text: qsTr("+ Add"); onClicked: { root.controller.rulesManager.addMapRemoteRule(mrSrc.text, mrDest.text); mrSrc.text=""; mrDest.text=""; mrListView.model = root.controller.rulesManager.getMapRemoteRules() } }
                     }
                     Rectangle {
@@ -445,7 +581,14 @@ Item {
                                 RowLayout {
                                     anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
                                     UTText { Layout.fillWidth: true; text: (modelData.src_pattern||"") + " → " + (modelData.dest_url||""); fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
-                                    UTButton { appearance: UTButton.Destructive; text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeMapRemoteRule(index); mrListView.model = root.controller.rulesManager.getMapRemoteRules() } }
+                                    UTButton {
+                                        appearance: UTButton.Destructive
+                                        text: "✕"
+                                        Accessible.name: qsTr("Remove rule: %1").arg(modelData.src_pattern)
+                                        implicitWidth: 28
+                                        implicitHeight: 24
+                                        onClicked: { root.controller.rulesManager.removeMapRemoteRule(index); mrListView.model = root.controller.rulesManager.getMapRemoteRules() }
+                                    }
                                 }
                             }
                             UTText { anchors.centerIn: parent; visible: parent.count === 0; text: qsTr("No map remote rules."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Secondary_Text }
@@ -465,12 +608,38 @@ Item {
                         columns: 3; columnSpacing: 12; rowSpacing: 8; Layout.fillWidth: true
                         enabled: throttleEnabled.checked; opacity: throttleEnabled.checked ? 1.0 : 0.5
 
-                        UTText { text: qsTr("Download:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                        UTSlider { id: dlSlider; from: 0; to: 10000; stepSize: 50; value: root.controller.rulesManager.downloadKbps; Layout.fillWidth: true }
+                        UTText {
+                            id: downloadLimitLabel
+                            text: qsTr("Download:")
+                            fontEnum: UIFontToken.Body_Text
+                            colorEnum: UIColorToken.Content_Text
+                        }
+                        UTSlider {
+                            id: dlSlider
+                            Accessible.name: downloadLimitLabel.text
+                            from: 0
+                            to: 10000
+                            stepSize: 50
+                            value: root.controller.rulesManager.downloadKbps
+                            Layout.fillWidth: true
+                        }
                         UTText { text: dlSlider.value > 0 ? qsTr("%1 KB/s").arg(dlSlider.value) : qsTr("Unlimited"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; Layout.preferredWidth: 100 }
 
-                        UTText { text: qsTr("Upload:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                        UTSlider { id: ulSlider; from: 0; to: 10000; stepSize: 50; value: root.controller.rulesManager.uploadKbps; Layout.fillWidth: true }
+                        UTText {
+                            id: uploadLimitLabel
+                            text: qsTr("Upload:")
+                            fontEnum: UIFontToken.Body_Text
+                            colorEnum: UIColorToken.Content_Text
+                        }
+                        UTSlider {
+                            id: ulSlider
+                            Accessible.name: uploadLimitLabel.text
+                            from: 0
+                            to: 10000
+                            stepSize: 50
+                            value: root.controller.rulesManager.uploadKbps
+                            Layout.fillWidth: true
+                        }
                         UTText { text: ulSlider.value > 0 ? qsTr("%1 KB/s").arg(ulSlider.value) : qsTr("Unlimited"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; Layout.preferredWidth: 100 }
                     }
 

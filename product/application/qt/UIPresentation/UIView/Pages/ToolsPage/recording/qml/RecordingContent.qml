@@ -318,6 +318,7 @@ FocusScope {
 
             UTComboBox {
                 id: modeCombo
+                Accessible.name: qsTr("Recording mode") + ": " + modeCombo.displayText
                 model: [
                     { text: qsTr("Full Screen"), value: "fullscreen" },
                     { text: qsTr("Select Region"), value: "region" }

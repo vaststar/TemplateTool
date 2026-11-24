@@ -60,7 +60,7 @@ Dialog {
             UTText { text: qsTr("Headers:"); fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Text }
             UTText { text: root.ruleData.headers || "(none)"; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; wrapMode: Text.WrapAnywhere; Layout.fillWidth: true }
         }
-        UTText { text: qsTr("Response Body:"); fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Text }
+        UTText { id: responseBodyLabel; text: qsTr("Response Body:"); fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Text }
         Rectangle {
             Layout.fillWidth: true; implicitHeight: Math.max(80, mdBody.implicitHeight + 12); radius: 4
             color: root._inputBg; border.color: root._inputBorder; border.width: 1
@@ -68,6 +68,7 @@ Dialog {
                 anchors.fill: parent
                 UTTextArea {
                     id: mdBody; readOnly: true; text: root.ruleData.body || ""
+                    Accessible.name: responseBodyLabel.text
                     padding: 6
                     background: null
                 }

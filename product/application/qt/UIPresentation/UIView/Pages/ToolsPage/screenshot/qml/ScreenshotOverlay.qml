@@ -440,6 +440,7 @@ Window {
                     }
                     ToolTip.visible: hovered
                     ToolTip.text: qsTr("Undo")
+                    Accessible.name: ToolTip.text
                 }
 
                 // Separator
@@ -472,6 +473,7 @@ Window {
                     onClicked: saveScreenshot()
                     ToolTip.visible: hovered
                     ToolTip.text: qsTr("Save")
+                    Accessible.name: ToolTip.text
 
                     background: Rectangle {
                         radius: 4
@@ -523,6 +525,7 @@ Window {
 
                 UTTextField {
                     id: textField
+                    Accessible.name: qsTr("Annotation text")
                     Layout.fillWidth: true
                     Layout.preferredWidth: 200
                     placeholderText: qsTr("Enter text...")
@@ -530,6 +533,7 @@ Window {
 
                 UTSpinBox {
                     id: fontSizeBox
+                    Accessible.name: qsTr("Font size")
                     from: 8
                     to: 72
                     value: 16

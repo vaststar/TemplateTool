@@ -254,6 +254,7 @@ Item {
                                 UTText { text: qsTr("URL"); fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Section_Title; anchors.verticalCenter: parent.verticalCenter }
                                 UTTextField {
                                     id: filterInput
+                                    Accessible.name: qsTr("Filter URLs")
                                     width: parent.width - 40; fieldHeight: 22; anchors.verticalCenter: parent.verticalCenter
                                     placeholderText: qsTr("Filter...")
                                     fontEnum: UIFontToken.Monospace_Text
@@ -438,7 +439,7 @@ Item {
                         Layout.fillWidth: true; height: 36; color: root._headerBg; radius: 3
                         RowLayout {
                             anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 4
-                            UTText { text: qsTr("Request"); fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Section_Title }
+                            UTText { id: requestLabel; text: qsTr("Request"); fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Section_Title }
                             Rectangle { width: 1; height: 18; color: root._sectionBorder }
                             Repeater {
                                 model: [qsTr("Headers"), qsTr("Body"), qsTr("Params")]
@@ -450,8 +451,28 @@ Item {
                                 }
                             }
                             Item { Layout.fillWidth: true }
-                            UTButton { appearance: UTButton.Ghost; text: qsTr("URL"); enabled: root.controller.selectedIndex >= 0; onClicked: root.controller.copyRequestUrl(); implicitHeight: 24; ToolTip.text: qsTr("Copy URL"); ToolTip.visible: hovered; ToolTip.delay: 500 }
-                            UTButton { appearance: UTButton.Ghost; text: qsTr("cURL"); enabled: root.controller.selectedIndex >= 0; onClicked: root.controller.copyRequestCurl(); implicitHeight: 24; ToolTip.text: qsTr("Copy as cURL"); ToolTip.visible: hovered; ToolTip.delay: 500 }
+                            UTButton {
+                                appearance: UTButton.Ghost
+                                text: qsTr("URL")
+                                enabled: root.controller.selectedIndex >= 0
+                                onClicked: root.controller.copyRequestUrl()
+                                implicitHeight: 24
+                                ToolTip.text: qsTr("Copy URL")
+                                Accessible.name: ToolTip.text
+                                ToolTip.visible: hovered
+                                ToolTip.delay: 500
+                            }
+                            UTButton {
+                                appearance: UTButton.Ghost
+                                text: qsTr("cURL")
+                                enabled: root.controller.selectedIndex >= 0
+                                onClicked: root.controller.copyRequestCurl()
+                                implicitHeight: 24
+                                ToolTip.text: qsTr("Copy as cURL")
+                                Accessible.name: ToolTip.text
+                                ToolTip.visible: hovered
+                                ToolTip.delay: 500
+                            }
                         }
                     }
                     UTText {
@@ -465,6 +486,7 @@ Item {
                         Layout.fillWidth: true; Layout.fillHeight: true
                         ScrollBar.horizontal.policy: ScrollBar.AsNeeded
                         UTTextArea {
+                            Accessible.name: requestLabel.text
                             text: (root.controller.selectedRewriteSummary.length > 0
                                    ? root.controller.selectedRewriteSummary + "\n\n" : "")
                                   + root.controller.requestDetailText
@@ -486,7 +508,7 @@ Item {
                         Layout.fillWidth: true; height: 36; color: root._headerBg; radius: 3
                         RowLayout {
                             anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 4
-                            UTText { text: qsTr("Response"); fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Section_Title }
+                            UTText { id: responseLabel; text: qsTr("Response"); fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Section_Title }
                             Rectangle { width: 1; height: 18; color: root._sectionBorder }
                             Repeater {
                                 model: [qsTr("Headers"), qsTr("Body"), qsTr("Summary")]
@@ -498,13 +520,24 @@ Item {
                                 }
                             }
                             Item { Layout.fillWidth: true }
-                            UTButton { appearance: UTButton.Ghost; text: qsTr("Copy"); enabled: root.controller.selectedIndex >= 0; onClicked: root.controller.copyResponseBody(); implicitHeight: 24; ToolTip.text: qsTr("Copy response body"); ToolTip.visible: hovered; ToolTip.delay: 500 }
+                            UTButton {
+                                appearance: UTButton.Ghost
+                                text: qsTr("Copy")
+                                enabled: root.controller.selectedIndex >= 0
+                                onClicked: root.controller.copyResponseBody()
+                                implicitHeight: 24
+                                ToolTip.text: qsTr("Copy response body")
+                                Accessible.name: ToolTip.text
+                                ToolTip.visible: hovered
+                                ToolTip.delay: 500
+                            }
                         }
                     }
                     UTScrollView {
                         Layout.fillWidth: true; Layout.fillHeight: true
                         ScrollBar.horizontal.policy: ScrollBar.AsNeeded
                         UTTextArea {
+                            Accessible.name: responseLabel.text
                             text: root.controller.responseDetailText; readOnly: true
                             padding: 6; borderRadius: 2
                         }

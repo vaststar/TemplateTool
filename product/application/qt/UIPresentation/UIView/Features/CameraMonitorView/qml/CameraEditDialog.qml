@@ -81,6 +81,7 @@ UTDialog {
 
         UTTextField {
             id: nameField
+            Accessible.name: placeholderText
             Layout.fillWidth: true
             placeholderText: qsTr("Name")
             onAccepted: dialog._confirm()
@@ -94,6 +95,7 @@ UTDialog {
 
             UTComboBox {
                 id: sourceKindBox
+                Accessible.name: qsTr("Camera source") + ": " + sourceKindBox.displayText
                 Layout.preferredWidth: 110
                 textRole: "text"
                 model: ListModel {
@@ -105,6 +107,7 @@ UTDialog {
 
             UTSpinBox {
                 id: localIndexBox
+                Accessible.name: qsTr("Local camera index")
                 Layout.fillWidth: true
                 visible: dialog.isAddCamera && sourceKindBox.currentIndex === 0
                 from: 0
@@ -114,6 +117,7 @@ UTDialog {
 
             UTTextField {
                 id: urlField
+                Accessible.name: qsTr("Camera URL")
                 Layout.fillWidth: true
                 visible: dialog.isAddCamera && sourceKindBox.currentIndex === 1
                 placeholderText: qsTr("rtsp:// or http:// URL")

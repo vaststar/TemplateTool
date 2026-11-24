@@ -37,6 +37,7 @@ BaseDatePicker {
     // === Presentation (collapsed box text) ===
     property string displayFormat: "yyyy-MM-dd"
     readonly property string dateValue: Qt.formatDate(selectedDate, displayFormat)
+    Accessible.name: control.dateValue
 
     // === Year range (wheel bounds) ===
     // Fixed bounds so the wheel window never shifts while scrolling. Derived

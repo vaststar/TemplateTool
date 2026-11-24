@@ -43,6 +43,7 @@ Item {
                         spacing: 12
 
                         UTText {
+                            id: outputDirLabel
                             text: qsTr("Save to:")
                             fontEnum: UIFontToken.Body_Text
                             Layout.preferredWidth: 120
@@ -50,6 +51,7 @@ Item {
 
                         UTTextField {
                             id: outputDirField
+                            Accessible.name: outputDirLabel.text
                             Layout.fillWidth: true
                             text: controller.outputDirectory || controller.getDefaultSavePath()
                             readOnly: true
@@ -68,6 +70,7 @@ Item {
                         spacing: 12
 
                         UTText {
+                            id: imageFormatLabel
                             text: qsTr("Image format:")
                             fontEnum: UIFontToken.Body_Text
                             Layout.preferredWidth: 120
@@ -75,6 +78,7 @@ Item {
 
                         UTComboBox {
                             id: imageFormatCombo
+                            Accessible.name: imageFormatLabel.text + " " + imageFormatCombo.displayText
                             model: ["png", "jpg", "bmp"]
                             currentIndex: model.indexOf(controller.imageFormat)
                             onCurrentTextChanged: {
@@ -108,6 +112,7 @@ Item {
                         spacing: 12
 
                         UTText {
+                            id: delayLabel
                             text: qsTr("Default delay:")
                             fontEnum: UIFontToken.Body_Text
                             Layout.preferredWidth: 120
@@ -115,6 +120,7 @@ Item {
 
                         UTComboBox {
                             id: delayCombo
+                            Accessible.name: delayLabel.text + " " + delayCombo.displayText
                             model: [
                                 { text: qsTr("None"), value: 0 },
                                 { text: qsTr("3 seconds"), value: 3 },
@@ -144,6 +150,7 @@ Item {
                         spacing: 12
 
                         UTText {
+                            id: timestampLabel
                             text: qsTr("Include timestamp:")
                             fontEnum: UIFontToken.Body_Text
                             Layout.preferredWidth: 120
@@ -151,6 +158,7 @@ Item {
 
                         UTSwitch {
                             id: timestampSwitch
+                            Accessible.name: timestampLabel.text
                             checked: controller.includeTimestamp
                             onToggled: controller.includeTimestamp = checked
                         }

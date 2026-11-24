@@ -112,44 +112,57 @@ Close this terminal to cancel.</source>
         <translation>URL 安全模式</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/Base64Panel.qml" line="49"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/Base64Panel.qml" line="50"/>
         <source>Input</source>
         <translation>輸入</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/Base64Panel.qml" line="62"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/Base64Panel.qml" line="64"/>
         <source>Enter text here...</source>
         <translation>在此輸入文字...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/Base64Panel.qml" line="73"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/Base64Panel.qml" line="75"/>
         <source>Encode</source>
         <translation>編碼</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/Base64Panel.qml" line="78"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/Base64Panel.qml" line="80"/>
         <source>Decode</source>
         <translation>解碼</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/Base64Panel.qml" line="83"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/Base64Panel.qml" line="85"/>
         <source>Swap</source>
         <translation>交換</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/Base64Panel.qml" line="88"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/Base64Panel.qml" line="90"/>
         <source>Clear</source>
         <translation>清空</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/Base64Panel.qml" line="109"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/Base64Panel.qml" line="112"/>
         <source>Output</source>
         <translation>輸出</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/Base64Panel.qml" line="116"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/Base64Panel.qml" line="119"/>
         <source>Copy</source>
         <translation>複製</translation>
+    </message>
+</context>
+<context>
+    <name>BaseCalendarDatePicker</name>
+    <message>
+        <location filename="../../UIComponent/UIComponentBase/BaseDatePicker/BaseCalendarDatePicker.qml" line="370"/>
+        <source>Previous page</source>
+        <translation>上一頁</translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/UIComponentBase/BaseDatePicker/BaseCalendarDatePicker.qml" line="435"/>
+        <source>Next page</source>
+        <translation>下一頁</translation>
     </message>
 </context>
 <context>
@@ -210,34 +223,49 @@ Close this terminal to cancel.</source>
         <translation>重新命名</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="85"/>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="86"/>
         <source>Name</source>
         <translation>名稱</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="100"/>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="102"/>
         <source>Local</source>
         <translation>本機</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="101"/>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="103"/>
         <source>Network</source>
         <translation>網路</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="119"/>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="123"/>
         <source>rtsp:// or http:// URL</source>
         <translation>rtsp:// 或 http:// 位址</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="129"/>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="133"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="136"/>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="140"/>
         <source>OK</source>
         <translation>確定</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="98"/>
+        <source>Camera source</source>
+        <translation>攝影機來源</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="110"/>
+        <source>Local camera index</source>
+        <translation>本機攝影機編號</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="120"/>
+        <source>Camera URL</source>
+        <translation>攝影機網址</translation>
     </message>
 </context>
 <context>
@@ -349,47 +377,47 @@ Close this terminal to cancel.</source>
         <translation>重新命名群組</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="112"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="113"/>
         <source>Display name</source>
         <translation>顯示名稱</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="120"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="122"/>
         <source>Name</source>
         <translation>名稱</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="125"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="128"/>
         <source>First name</source>
         <translation>名</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="139"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="144"/>
         <source>Last name</source>
         <translation>姓</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="153"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="160"/>
         <source>Gender</source>
         <translation>性別</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="169"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="178"/>
         <source>Phone</source>
         <translation>電話</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="184"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="195"/>
         <source>Email</source>
         <translation>電子郵件</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="204"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="216"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="211"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="223"/>
         <source>OK</source>
         <translation>確定</translation>
     </message>
@@ -410,24 +438,29 @@ Close this terminal to cancel.</source>
         <translation>聯絡人列表</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="69"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="70"/>
         <source>Search contacts</source>
         <translation>搜尋聯絡人</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="217"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="219"/>
         <source>No matching contacts found</source>
         <translation>沒有找到符合的聯絡人</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="237"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="239"/>
         <source>Loading failed</source>
         <translation>載入失敗</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="238"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="240"/>
         <source>Loading…</source>
         <translation>載入中…</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="84"/>
+        <source>Clear search</source>
+        <translation>清除搜尋</translation>
     </message>
 </context>
 <context>
@@ -630,53 +663,53 @@ Close this terminal to cancel.</source>
         <translation>JSON 格式化</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="38"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="39"/>
         <source>Indent spaces:</source>
         <translation>縮排空格數：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="58"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="61"/>
         <source>Input JSON</source>
         <translation>輸入 JSON</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="71"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="75"/>
         <source>Enter JSON here...</source>
         <translation>在此輸入 JSON...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="82"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="86"/>
         <source>Format</source>
         <translation>格式化</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="87"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="91"/>
         <source>Minify</source>
         <translation>壓縮</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="92"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="96"/>
         <source>Validate</source>
         <translation>驗證</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="97"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="123"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="101"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="128"/>
         <source>Tree View</source>
         <translation>樹狀檢視</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="102"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="106"/>
         <source>Clear</source>
         <translation>清除</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="123"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="128"/>
         <source>Output</source>
         <translation>輸出</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="131"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/JsonPanel.qml" line="136"/>
         <source>Copy</source>
         <translation>複製</translation>
     </message>
@@ -684,12 +717,12 @@ Close this terminal to cancel.</source>
 <context>
     <name>LanguageSettingsPanel</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/qml/LanguageSettingsPanel.qml" line="23"/>
+        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/qml/LanguageSettingsPanel.qml" line="24"/>
         <source>Language</source>
         <translation>語言</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/qml/LanguageSettingsPanel.qml" line="29"/>
+        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/qml/LanguageSettingsPanel.qml" line="30"/>
         <source>Choose the display language for the application.</source>
         <translation>選擇應用程式的顯示語言。</translation>
     </message>
@@ -827,12 +860,12 @@ Close this terminal to cancel.</source>
         <translation>回應內容：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/MockDetailDialog.qml" line="80"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/MockDetailDialog.qml" line="81"/>
         <source>Edit (load into form)</source>
         <translation>編輯（載入表單）</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/MockDetailDialog.qml" line="85"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/MockDetailDialog.qml" line="86"/>
         <source>🧪 Test Pattern</source>
         <translation>🧪 測試比對</translation>
     </message>
@@ -862,7 +895,7 @@ Close this terminal to cancel.</source>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="160"/>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="216"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="314"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="315"/>
         <source>ALL</source>
         <translation>全部</translation>
     </message>
@@ -873,108 +906,113 @@ Close this terminal to cancel.</source>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="254"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="453"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="456"/>
         <source>URL</source>
         <translation>URL</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="258"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="259"/>
         <source>Filter...</source>
         <translation>篩選...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="269"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="270"/>
         <source>Time</source>
         <translation>時間</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="276"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="277"/>
         <source>Size</source>
         <translation>大小</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="286"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="287"/>
         <source>Process</source>
         <translation>程序</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="342"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="343"/>
         <source>No processes captured</source>
         <translation>未擷取到程序</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="418"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="419"/>
         <source>Waiting for requests...
 Proxy: 127.0.0.1:%1</source>
         <translation>等待請求...
 代理：127.0.0.1:%1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="418"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="419"/>
         <source>Click ▶ Start to begin capturing</source>
         <translation>點擊 ▶ Start 開始擷取</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="441"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="442"/>
         <source>Request</source>
         <translation>請求</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="444"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="492"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="445"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="514"/>
         <source>Headers</source>
         <translation>請求標頭</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="444"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="492"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="445"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="514"/>
         <source>Body</source>
         <translation>Body</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="444"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="445"/>
         <source>Params</source>
         <translation>參數</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="453"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="460"/>
         <source>Copy URL</source>
         <translation>複製 URL</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="454"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="467"/>
         <source>cURL</source>
         <translation>cURL</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="454"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="471"/>
         <source>Copy as cURL</source>
         <translation>以 cURL 形式複製</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="460"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="481"/>
         <source>Captured data was truncated. Details and exports may be incomplete.</source>
         <translation>擷取的資料已遭截斷，詳細資訊和匯出內容可能不完整。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="489"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="511"/>
         <source>Response</source>
         <translation>回應</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="492"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="514"/>
         <source>Summary</source>
         <translation>摘要</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="501"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="525"/>
         <source>Copy</source>
         <translation>複製</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="501"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="529"/>
         <source>Copy response body</source>
         <translation>複製回應內容</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="257"/>
+        <source>Filter URLs</source>
+        <translation>篩選網址</translation>
     </message>
 </context>
 <context>
@@ -1108,32 +1146,32 @@ Proxy: 127.0.0.1:%1</source>
         <translation>連接埠:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="42"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="43"/>
         <source>Connected</source>
         <translation>已連接</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="42"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="43"/>
         <source>Disconnected</source>
         <translation>未連接</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="49"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="50"/>
         <source>%1 retained requests</source>
         <translation>%1 筆保留的請求</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="52"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="53"/>
         <source>Clear</source>
         <translation>清空</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="53"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="54"/>
         <source>Export Retained</source>
         <translation>匯出保留請求</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="144"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="145"/>
         <source>Export Retained Requests</source>
         <translation>匯出保留的請求</translation>
     </message>
@@ -1148,42 +1186,42 @@ Proxy: 127.0.0.1:%1</source>
         <translation>▶ 啟動</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="99"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="100"/>
         <source>📡 Capture</source>
         <translation>📡 擷取</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="100"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="101"/>
         <source>📋 Rules</source>
         <translation>📋 規則</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="101"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="102"/>
         <source>⚙ Settings</source>
         <translation>⚙ 設定</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="69"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="70"/>
         <source>Rules applied</source>
         <translation>規則已生效</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="70"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="71"/>
         <source>Rule sync failed</source>
         <translation>規則同步失敗</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="71"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="72"/>
         <source>Syncing rules...</source>
         <translation>正在同步規則…</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="71"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="72"/>
         <source>Rules pending sync</source>
         <translation>規則待同步</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="87"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="88"/>
         <source>Retry Sync</source>
         <translation>重新同步</translation>
     </message>
@@ -1191,7 +1229,7 @@ Proxy: 127.0.0.1:%1</source>
 <context>
     <name>NetworkRulesTab</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="222"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="236"/>
         <source>Waiting...</source>
         <translation>等待確認…</translation>
     </message>
@@ -1252,7 +1290,7 @@ Proxy: 127.0.0.1:%1</source>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="96"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="159"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="166"/>
         <source>🧪 Test</source>
         <translation>🧪 測試</translation>
     </message>
@@ -1293,261 +1331,261 @@ Proxy: 127.0.0.1:%1</source>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="110"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="161"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="168"/>
         <source>Clear All</source>
         <translation>全部清除</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="133"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="140"/>
         <source>No mock rules. Add one above.
 Double-click a rule to view details.</source>
         <translation>尚無 Mock 規則，請於上方新增。
 按兩下規則查看詳情。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="141"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="148"/>
         <source>Breakpoint Rules</source>
         <translation>中斷點規則</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="142"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="149"/>
         <source>Pause matching requests so you can inspect or modify them before forwarding.</source>
         <translation>暫停符合的請求，方便在放行前檢視或修改。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="149"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="156"/>
         <source>⚠️ Interception is OFF — breakpoints won&apos;t take effect.</source>
         <translation>⚠️ 攔截已關閉——中斷點不會生效。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="150"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="157"/>
         <source>Enable</source>
         <translation>啟用</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="156"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="305"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="163"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="326"/>
         <source>URL pattern (regex)</source>
         <translation>URL 比對（正規表示式）</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="158"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="276"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="307"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="354"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="435"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="165"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="290"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="328"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="382"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="464"/>
         <source>+ Add</source>
         <translation>+ 新增</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="190"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="204"/>
         <source>No breakpoint rules.</source>
         <translation>尚無中斷點規則。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="196"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="210"/>
         <source>Paused Requests (%1)</source>
         <translation>已暫停的請求 (%1)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="222"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="236"/>
         <source>▶ Forward</source>
         <translation>▶ 放行</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="228"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="242"/>
         <source>✕ Drop</source>
         <translation>✕ 丟棄</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="240"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="254"/>
         <source>▶ Forward All (%1)</source>
         <translation>▶ 全部放行 (%1)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="246"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="260"/>
         <source>✕ Drop All (%1)</source>
         <translation>✕ 全部丟棄 (%1)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="258"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="272"/>
         <source>How to use Breakpoints:</source>
         <translation>中斷點使用方法：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="259"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="273"/>
         <source>1. Add a URL pattern rule above (regex)</source>
         <translation>1. 於上方加入 URL 比對規則（正規表示式）</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="260"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="274"/>
         <source>2. Interception is auto-enabled when you add a rule</source>
         <translation>2. 加入規則後自動啟用攔截</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="261"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="275"/>
         <source>3. When a matching request arrives, it pauses and appears in &quot;Paused Requests&quot;</source>
         <translation>3. 符合的請求送達後會被暫停，並出現在 &quot;已暫停的請求&quot; 中</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="262"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="276"/>
         <source>4. Click &quot;▶ Forward&quot; to let it through, or &quot;✕ Drop&quot; to block it (returns 502)</source>
         <translation>4. 點擊 &quot;▶ 放行&quot; 讓其通過，或 &quot;✕ 丟棄&quot; 阻斷（回傳 502）</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="263"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="277"/>
         <source>5. Paused requests auto-forward after 5 minutes timeout</source>
         <translation>5. 暫停的請求於 5 分鐘逾時後自動放行</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="271"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="285"/>
         <source>Blacklist Rules</source>
         <translation>黑名單規則</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="272"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="286"/>
         <source>Block matching requests entirely. They will receive a 403 response.</source>
         <translation>完全阻斷符合的請求，將回傳 403 回應。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="275"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="289"/>
         <source>URL pattern to block (regex)</source>
         <translation>要阻斷的 URL 比對（正規表示式）</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="293"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="314"/>
         <source>No blacklist rules.</source>
         <translation>尚無黑名單規則。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="301"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="322"/>
         <source>Map Local Rules</source>
         <translation>對應本機規則</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="302"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="323"/>
         <source>Serve a local file instead of the remote response for matching URLs.</source>
         <translation>對符合的 URL 以本機檔案取代遠端回應。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="306"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="327"/>
         <source>Local file path</source>
         <translation>本機檔案路徑</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="323"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="351"/>
         <source>No map local rules.</source>
         <translation>尚無對應本機規則。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="332"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="360"/>
         <source>Bypass Hosts (Passthrough)</source>
         <translation>略過主機（直接轉發）</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="334"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="362"/>
         <source>Requests matching these host regex patterns will bypass MITM decryption. Useful for AI tools (GPT/Codex/豆包) that use certificate pinning.</source>
         <translation>符合這些主機正則表達式的請求將跳過 MITM 解密。適用於使用憑證鎖定的 AI 工具（GPT/Codex/豆包）。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="344"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="372"/>
         <source>Note: bypassed hosts will not show request/response details in Capture.</source>
         <translation>注意：被略過的主機不會在抓包中顯示請求/回應詳情。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="345"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="373"/>
         <source>They are forwarded directly so the app can connect successfully.</source>
         <translation>這些請求會被直接轉發，讓應用程式可以正常連線。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="351"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="379"/>
         <source>Host regex, e.g. (^|.)openai.com(:d+)?$</source>
         <translation>主機正則表達式，例如 (^|.)openai.com(:d+)?$</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="367"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="395"/>
         <source>Reload</source>
         <translation>重新載入</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="370"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="398"/>
         <source>Reset Default</source>
         <translation>還原預設</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="419"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="448"/>
         <source>No bypass hosts. Add one above.</source>
         <translation>尚無略過主機，請在上方新增。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="429"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="458"/>
         <source>Map Remote Rules</source>
         <translation>對應遠端規則</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="430"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="459"/>
         <source>Redirect matching requests to a different URL.</source>
         <translation>將符合的請求重新導向至另一個 URL。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="433"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="462"/>
         <source>Source URL pattern (regex)</source>
         <translation>來源 URL 比對（正規表示式）</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="434"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="463"/>
         <source>Destination URL</source>
         <translation>目的 URL</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="451"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="487"/>
         <source>No map remote rules.</source>
         <translation>尚無對應遠端規則。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="459"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="495"/>
         <source>Bandwidth Throttle</source>
         <translation>頻寬限速</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="460"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="496"/>
         <source>Simulate slow network conditions by limiting bandwidth.</source>
         <translation>透過限制頻寬模擬慢速網路。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="462"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="498"/>
         <source>Enable Throttle</source>
         <translation>啟用限速</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="468"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="504"/>
         <source>Download:</source>
         <translation>下載：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="470"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="474"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="506"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="510"/>
         <source>%1 KB/s</source>
         <translation>%1 KB/s</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="470"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="474"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="506"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="510"/>
         <source>Unlimited</source>
         <translation>不限制</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="472"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="508"/>
         <source>Upload:</source>
         <translation>上傳：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="479"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="515"/>
         <source>Presets:</source>
         <translation>預設：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="495"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="531"/>
         <source>Apply</source>
         <translation>套用</translation>
     </message>
@@ -1555,6 +1593,30 @@ Double-click a rule to view details.</source>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="61"/>
         <source>Rewrite</source>
         <translation>改寫</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="133"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="197"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="307"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="344"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="480"/>
+        <source>Remove rule: %1</source>
+        <translation>移除規則：%1</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="434"/>
+        <source>Remove bypass host: %1</source>
+        <translation>移除略過的主機：%1</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="232"/>
+        <source>HTTP method</source>
+        <translation>HTTP 方法</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="470"/>
+        <source>Bypass host pattern</source>
+        <translation>略過主機比對模式</translation>
     </message>
 </context>
 <context>
@@ -1570,127 +1632,127 @@ Double-click a rule to view details.</source>
         <translation>代理連接埠：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="41"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="42"/>
         <source>(1024–65535)</source>
         <translation>(1024–65535)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="44"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="45"/>
         <source>System Proxy:</source>
         <translation>系統代理：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="46"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="47"/>
         <source>Automatically configure system proxy on start/stop</source>
         <translation>啟動/停止時自動設定系統代理</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="51"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="52"/>
         <source>Intercept:</source>
         <translation>攔截：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="53"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="54"/>
         <source>Enable request interception (requires breakpoint rules)</source>
         <translation>啟用請求攔截（需中斷點規則）</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="63"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="64"/>
         <source>HTTPS Certificate</source>
         <translation>HTTPS 憑證</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="82"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="83"/>
         <source>Certificate installed and trusted</source>
         <translation>憑證已安裝並受信任</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="83"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="84"/>
         <source>Certificate not trusted</source>
         <translation>憑證未受信任</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="89"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="90"/>
         <source>HTTPS traffic capture is ready to use.</source>
         <translation>HTTPS 擷取已就緒。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="90"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="91"/>
         <source>HTTPS capture will show certificate errors. Install the CA cert below.</source>
         <translation>HTTPS 擷取將出現憑證錯誤，請於下方安裝 CA 憑證。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="113"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="114"/>
         <source>Click the button below to install and trust the mitmproxy CA certificate. A system password dialog will appear — this is required to add the certificate to the trusted root store.</source>
         <translation>點擊下方按鈕安裝並信任 mitmproxy CA 憑證。系統會彈出密碼對話框——這是將憑證加入受信任根存放區所必需的。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="132"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="133"/>
         <source>Installing...</source>
         <translation>安裝中...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="132"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="133"/>
         <source>One-Click Install CA Certificate</source>
         <translation>一鍵安裝 CA 憑證</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="153"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="154"/>
         <source>Steps: Enter macOS password → Import to System Keychain → Auto-trust for SSL</source>
         <translation>步驟：輸入 macOS 密碼 → 匯入系統鑰匙圈 → 自動信任 SSL</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="164"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="165"/>
         <source>Path:</source>
         <translation>路徑：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="170"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="171"/>
         <source>Show in Finder</source>
         <translation>在 Finder 中顯示</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="171"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="172"/>
         <source>Refresh Status</source>
         <translation>重新整理狀態</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="172"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="173"/>
         <source>Re-install</source>
         <translation>重新安裝</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="180"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="181"/>
         <source>About</source>
         <translation>關於</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="184"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="185"/>
         <source>Engine:</source>
         <translation>引擎：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="185"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="186"/>
         <source>mitmproxy (PyInstaller bundle)</source>
         <translation>mitmproxy (PyInstaller 封裝)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="186"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="187"/>
         <source>Communication:</source>
         <translation>通訊：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="187"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="188"/>
         <source>TCP socket, newline-delimited JSON</source>
         <translation>TCP socket，以換行分隔的 JSON</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="188"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="189"/>
         <source>Proxy Address:</source>
         <translation>代理位址：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="189"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="190"/>
         <source>127.0.0.1:%1</source>
         <translation>127.0.0.1:%1</translation>
     </message>
@@ -1718,32 +1780,32 @@ Double-click a rule to view details.</source>
         <translation>比對模式：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/PatternTestDialog.qml" line="49"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/PatternTestDialog.qml" line="54"/>
         <source>Regex pattern (e.g. /api/user.*)</source>
         <translation>正規表示式（例如 /api/user.*）</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/PatternTestDialog.qml" line="50"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/PatternTestDialog.qml" line="56"/>
         <source>Test URL:</source>
         <translation>測試 URL：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/PatternTestDialog.qml" line="51"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/PatternTestDialog.qml" line="62"/>
         <source>https://example.com/api/user/123</source>
         <translation>https://example.com/api/user/123</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/PatternTestDialog.qml" line="57"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/PatternTestDialog.qml" line="69"/>
         <source>▶ Run Test</source>
         <translation>▶ 執行測試</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/PatternTestDialog.qml" line="63"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/PatternTestDialog.qml" line="75"/>
         <source>Clear</source>
         <translation>清除</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/PatternTestDialog.qml" line="82"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/PatternTestDialog.qml" line="94"/>
         <source>Tip: Pattern uses Python-style regex (re.search). It matches anywhere in the URL, not just from the start.</source>
         <translation>提示：使用 Python 風格的正規表示式（re.search），可比對 URL 中任意位置，並非僅限開頭。</translation>
     </message>
@@ -2415,6 +2477,11 @@ Double-click a rule to view details.</source>
         <source>🗑 Delete</source>
         <translation>🗑 刪除</translation>
     </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="321"/>
+        <source>Recording mode</source>
+        <translation>錄製模式</translation>
+    </message>
 </context>
 <context>
     <name>RecordingController</name>
@@ -2545,77 +2612,77 @@ Press ESC to cancel</source>
         <translation>輸出設定</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="47"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="48"/>
         <source>Save to:</source>
         <translation>儲存至:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="61"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="63"/>
         <source>Browse...</source>
         <translation>瀏覽...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="72"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="75"/>
         <source>Video format:</source>
         <translation>影片格式:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="198"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="208"/>
         <source>System Audio:</source>
         <translation>系統音訊：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="95"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="99"/>
         <source>Recording Settings</source>
         <translation>錄製設定</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="106"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="111"/>
         <source>Frame rate:</source>
         <translation>幀率:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="114"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="120"/>
         <source>15 fps (small size)</source>
         <translation>15 fps（較小體積）</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="115"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="121"/>
         <source>30 fps (standard)</source>
         <translation>30 fps（標準）</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="116"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="122"/>
         <source>60 fps (smooth)</source>
         <translation>60 fps（流暢）</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="141"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="148"/>
         <source>Microphone:</source>
         <translation>麥克風：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="185"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="194"/>
         <source>Microphone access is required to include your voice in recordings.</source>
         <translation>在錄製內容中加入您的聲音需要麥克風權限。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="234"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="246"/>
         <source>⚠ No system audio device found. Install a virtual audio device (e.g. BlackHole on macOS, Stereo Mix on Windows).</source>
         <translation>⚠ 未找到系統音訊裝置。請安裝虛擬音訊裝置（如 macOS 的 BlackHole，Windows 的 Stereo Mix）。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="247"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="259"/>
         <source>FFmpeg:</source>
         <translation>FFmpeg:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="255"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="267"/>
         <source>Not found</source>
         <translation>未找到</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="271"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="283"/>
         <source>Select Output Directory</source>
         <translation>選擇輸出目錄</translation>
     </message>
@@ -2634,31 +2701,31 @@ Press ESC to cancel</source>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="129"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="419"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="428"/>
         <source>Replace body</source>
         <translation>替換本文</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="130"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="419"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="428"/>
         <source>Set JSON field</source>
         <translation>設定 JSON 欄位</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="131"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="419"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="428"/>
         <source>Remove JSON field</source>
         <translation>刪除 JSON 欄位</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="132"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="419"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="428"/>
         <source>Find and replace text</source>
         <translation>尋找並取代文字</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="133"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="419"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="428"/>
         <source>Keep body</source>
         <translation>保留本文</translation>
     </message>
@@ -2699,13 +2766,13 @@ Press ESC to cancel</source>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="248"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="350"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="353"/>
         <source>Request</source>
         <translation>請求</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="248"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="350"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="353"/>
         <source>Response</source>
         <translation>回應</translation>
     </message>
@@ -2715,154 +2782,194 @@ Press ESC to cancel</source>
         <translation>編輯</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="297"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="300"/>
         <source>No rewrite rules. Configure one below.</source>
         <translation>尚無改寫規則，請在下方設定。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="316"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="319"/>
         <source>Edit Rewrite Rule</source>
         <translation>編輯改寫規則</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="316"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="319"/>
         <source>New Rewrite Rule</source>
         <translation>新增改寫規則</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="326"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="329"/>
         <source>URL Pattern:</source>
         <translation>URL 比對模式：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="334"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="337"/>
         <source>e.g. /api/user.*</source>
         <translation>例如 /api/user.*</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="338"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="341"/>
         <source>Test</source>
         <translation>驗證</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="343"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="346"/>
         <source>Target:</source>
         <translation>目標：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="358"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="361"/>
         <source>Enabled</source>
         <translation>啟用</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="362"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="365"/>
         <source>Header Changes</source>
         <translation>請求標頭 / 回應標頭修改</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="365"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="368"/>
         <source>Set replaces existing values; Add keeps them; Remove deletes the header. Header names are case-insensitive.</source>
         <translation>設定會取代現有值；附加會保留現有值；刪除會移除該標頭。標頭名稱不區分大小寫。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="382"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="385"/>
         <source>Set</source>
         <translation>設定</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="382"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="385"/>
         <source>Add</source>
         <translation>附加</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="382"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="385"/>
         <source>Remove</source>
         <translation>刪除</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="392"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="395"/>
         <source>Header name</source>
         <translation>標頭名稱</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="401"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="404"/>
         <source>Header value</source>
         <translation>標頭值</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="410"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="419"/>
         <source>+ Header Change</source>
         <translation>+ 標頭修改</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="415"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="424"/>
         <source>Body Change</source>
         <translation>本文修改</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="426"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="435"/>
         <source>JSON field path, e.g. /data/enabled</source>
         <translation>JSON 欄位路徑，例如 /data/enabled</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="431"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="440"/>
         <source>Use /items/0 for an array item, /items/- to append, ~0 for ~ and ~1 for /. The parent must exist. An empty path replaces the whole JSON document when setting a value.</source>
         <translation>使用 /items/0 指定陣列元素，/items/- 附加元素，~0 表示 ~，~1 表示 /。父節點必須存在。設定值時，空路徑會取代整份 JSON 文件。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="438"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="447"/>
         <source>JSON Value:</source>
         <translation>JSON 值：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="438"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="447"/>
         <source>Replacement Body:</source>
         <translation>替換本文：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="450"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="459"/>
         <source>Enter valid JSON: true, null, 123, &quot;text&quot;, an array or an object</source>
         <translation>輸入有效 JSON：true、null、123、&quot;text&quot;、陣列或物件</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="451"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="460"/>
         <source>Enter the new body. Leave empty to send an empty body.</source>
         <translation>輸入新本文，留空則傳送空本文。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="456"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="465"/>
         <source>Find Text (literal):</source>
         <translation>尋找文字（字面比對）：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="464"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="473"/>
         <source>Text to find</source>
         <translation>要尋找的文字</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="468"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="477"/>
         <source>Replace With:</source>
         <translation>取代為：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="476"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="485"/>
         <source>Replacement text; leave empty to remove matches</source>
         <translation>替換文字，留空則刪除符合的內容</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="495"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="504"/>
         <source>Save Changes</source>
         <translation>儲存變更</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="495"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="504"/>
         <source>Add Rule</source>
         <translation>新增規則</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="499"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="508"/>
         <source>Reset Form</source>
         <translation>重設表單</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="266"/>
+        <source>Move rule up</source>
+        <translation>上移規則</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="277"/>
+        <source>Move rule down</source>
+        <translation>下移規則</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="288"/>
+        <source>Remove rule</source>
+        <translation>移除規則</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="411"/>
+        <source>Remove header change</source>
+        <translation>移除標頭修改</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="227"/>
+        <source>Enable rule: %1</source>
+        <translation>啟用規則：%1</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="372"/>
+        <source>HTTP method</source>
+        <translation>HTTP 方法</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="456"/>
+        <source>JSON field path</source>
+        <translation>JSON 欄位路徑</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="399"/>
+        <source>Header operation</source>
+        <translation>標頭操作</translation>
     </message>
 </context>
 <context>
@@ -2987,8 +3094,8 @@ Press ESC to cancel</source>
 <context>
     <name>ScreenshotOverlay</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="597"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="600"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="599"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="602"/>
         <source>Could not save the screenshot. Please try again.</source>
         <translation>無法儲存螢幕擷取畫面，請重試。</translation>
     </message>
@@ -3023,31 +3130,41 @@ Press ESC to cancel</source>
         <translation>復原</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="454"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="455"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="474"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="475"/>
         <source>Save</source>
         <translation>儲存</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="513"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="515"/>
         <source>Add Text</source>
         <translation>新增文字</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="528"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="530"/>
         <source>Enter text...</source>
         <translation>輸入文字...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="568"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="570"/>
         <source>Click and drag to select region
 Press ESC to cancel</source>
         <translation>點選並拖曳以選取區域
 按 ESC 取消</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="528"/>
+        <source>Annotation text</source>
+        <translation>標註文字</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="536"/>
+        <source>Font size</source>
+        <translation>字型大小</translation>
     </message>
 </context>
 <context>
@@ -3071,67 +3188,67 @@ Press ESC to cancel</source>
         <translation>輸出設定</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="46"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="47"/>
         <source>Save to:</source>
         <translation>儲存至:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="60"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="62"/>
         <source>Browse...</source>
         <translation>瀏覽...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="71"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="74"/>
         <source>Image format:</source>
         <translation>圖片格式:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="89"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="93"/>
         <source>PNG for quality, JPG for smaller size</source>
         <translation>PNG 畫質更好，JPG 體積更小</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="100"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="104"/>
         <source>Capture Settings</source>
         <translation>截圖設定</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="111"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="116"/>
         <source>Default delay:</source>
         <translation>預設延遲:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="119"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="125"/>
         <source>None</source>
         <translation>無</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="120"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="126"/>
         <source>3 seconds</source>
         <translation>3 秒</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="121"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="127"/>
         <source>5 seconds</source>
         <translation>5 秒</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="122"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="128"/>
         <source>10 seconds</source>
         <translation>10 秒</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="147"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="154"/>
         <source>Include timestamp:</source>
         <translation>包含時間戳:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="159"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="167"/>
         <source>Add date/time watermark to screenshots</source>
         <translation>在截圖上新增日期/時間浮水印</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="171"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="179"/>
         <source>Select Output Directory</source>
         <translation>選擇輸出目錄</translation>
     </message>
@@ -3235,6 +3352,21 @@ Press ESC to cancel</source>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="170"/>
         <source>Seconds</source>
         <translation>秒</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="107"/>
+        <source>Timestamp</source>
+        <translation>時間戳記</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="150"/>
+        <source>Date and time</source>
+        <translation>日期與時間</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="158"/>
+        <source>Time zone</source>
+        <translation>時區</translation>
     </message>
 </context>
 <context>
@@ -3361,122 +3493,122 @@ Press ESC to cancel</source>
         <translation>軟體更新</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="31"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="32"/>
         <source>Opening installer...</source>
         <translation>正在開啟安裝程式...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="31"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="32"/>
         <source>Opening terminal...</source>
         <translation>正在開啟終端機...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="33"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="34"/>
         <source>Continue installation</source>
         <translation>繼續安裝</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="35"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="36"/>
         <source>Ready to install</source>
         <translation>準備安裝</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="37"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="38"/>
         <source>Verifying package...</source>
         <translation>正在驗證安裝套件...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="39"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="40"/>
         <source>Downloading update...</source>
         <translation>正在下載更新...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="41"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="42"/>
         <source>A new version is available!</source>
         <translation>發現新版本！</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="43"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="44"/>
         <source>Checking for updates...</source>
         <translation>正在檢查更新...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="44"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="45"/>
         <source>Check for Updates</source>
         <translation>檢查更新</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="54"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="55"/>
         <source>Version %1</source>
         <translation>版本 %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="81"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="82"/>
         <source>The installer open request was accepted. This application will close so you can continue installation.</source>
         <translation>系統已接受開啟安裝程式的請求。本應用程式將結束，以便繼續安裝。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="83"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="84"/>
         <source>The disk image open request was accepted. This application will close. Drag the new app into Applications to replace it.</source>
         <translation>系統已接受開啟磁碟映像檔的請求。本應用程式將結束，請將新應用程式拖入 Applications（應用程式）資料夾，取代舊版本。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="85"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="86"/>
         <source>An installation terminal was requested. This application will close. In the terminal, wait until it has closed, then press Enter to install.</source>
         <translation>已要求開啟安裝終端機。此應用程式即將結束。請在終端機中等待應用程式結束後，再按 Enter 鍵安裝。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="86"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="87"/>
         <source>The package open request was accepted. This application will close so you can continue installation.</source>
         <translation>系統已接受開啟套件的請求。本應用程式將結束，以便繼續安裝。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="118"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="120"/>
         <source>%1%</source>
         <translation>%1%</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="140"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="142"/>
         <source>You are using the latest version.</source>
         <translation>目前已是最新版本。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="162"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="164"/>
         <source>Background</source>
         <translation>背景執行</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="170"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="172"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="185"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="187"/>
         <source>Show Installer in Folder</source>
         <translation>在資料夾中顯示安裝程式</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="193"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="195"/>
         <source>Open Installer and Quit</source>
         <translation>開啟安裝程式並結束</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="193"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="195"/>
         <source>Open Terminal and Quit</source>
         <translation>開啟終端機並結束</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="203"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="205"/>
         <source>Download Installer</source>
         <translation>下載安裝程式</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="214"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="216"/>
         <source>Later</source>
         <translation>稍後</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="214"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="216"/>
         <source>Close</source>
         <translation>關閉</translation>
     </message>
@@ -3537,6 +3669,16 @@ Press ESC to cancel</source>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/qml/UuidPanel.qml" line="123"/>
         <source>Clear History</source>
         <translation>清空歷史</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/qml/UuidPanel.qml" line="53"/>
+        <source>Generated UUID</source>
+        <translation>產生的 UUID</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/qml/UuidPanel.qml" line="83"/>
+        <source>UUID to validate</source>
+        <translation>待驗證的 UUID</translation>
     </message>
 </context>
 <context>

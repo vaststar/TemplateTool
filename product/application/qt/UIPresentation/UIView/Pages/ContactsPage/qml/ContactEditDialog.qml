@@ -109,12 +109,14 @@ UTDialog {
             rowSpacing: 12
 
             UTText {
+                id: displayNameLabel
                 text: qsTr("Display name")
                 Layout.alignment: Qt.AlignVCenter
             }
 
             UTTextField {
                 id: nameField
+                Accessible.name: displayNameLabel.text
                 Layout.fillWidth: true
                 maximumLength: 128
                 placeholderText: qsTr("Name")
@@ -122,6 +124,7 @@ UTDialog {
             }
 
             UTText {
+                id: firstNameLabel
                 text: qsTr("First name")
                 visible: dialog.isPerson
                 Layout.alignment: Qt.AlignVCenter
@@ -129,6 +132,7 @@ UTDialog {
 
             UTTextField {
                 id: firstNameField
+                Accessible.name: firstNameLabel.text
                 Layout.fillWidth: true
                 visible: dialog.isPerson
                 maximumLength: 64
@@ -136,6 +140,7 @@ UTDialog {
             }
 
             UTText {
+                id: lastNameLabel
                 text: qsTr("Last name")
                 visible: dialog.isPerson
                 Layout.alignment: Qt.AlignVCenter
@@ -143,6 +148,7 @@ UTDialog {
 
             UTTextField {
                 id: lastNameField
+                Accessible.name: lastNameLabel.text
                 Layout.fillWidth: true
                 visible: dialog.isPerson
                 maximumLength: 64
@@ -150,6 +156,7 @@ UTDialog {
             }
 
             UTText {
+                id: genderLabel
                 text: qsTr("Gender")
                 visible: dialog.isPerson
                 Layout.alignment: Qt.AlignVCenter
@@ -157,6 +164,7 @@ UTDialog {
 
             UTComboBox {
                 id: genderField
+                Accessible.name: genderLabel.text + ": " + genderField.displayText
                 Layout.fillWidth: true
                 visible: dialog.isPerson
                 model: genderOptions
@@ -166,6 +174,7 @@ UTDialog {
             }
 
             UTText {
+                id: phoneLabel
                 text: qsTr("Phone")
                 visible: dialog.isPerson
                 Layout.alignment: Qt.AlignVCenter
@@ -173,6 +182,7 @@ UTDialog {
 
             UTTextField {
                 id: phoneField
+                Accessible.name: phoneLabel.text
                 Layout.fillWidth: true
                 visible: dialog.isPerson
                 maximumLength: 64
@@ -181,6 +191,7 @@ UTDialog {
             }
 
             UTText {
+                id: emailLabel
                 text: qsTr("Email")
                 visible: dialog.isPerson
                 Layout.alignment: Qt.AlignVCenter
@@ -188,6 +199,7 @@ UTDialog {
 
             UTTextField {
                 id: emailField
+                Accessible.name: emailLabel.text
                 Layout.fillWidth: true
                 visible: dialog.isPerson
                 maximumLength: 254

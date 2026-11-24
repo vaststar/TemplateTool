@@ -20,6 +20,7 @@ Item {
             spacing: 12
 
             UTText {
+                id: languageLabel
                 text: qsTr("Language")
                 fontEnum: UIFontToken.Section_Title
                 colorEnum: UIColorToken.Sidebar_Item_Text
@@ -34,6 +35,7 @@ Item {
 
             UTComboBox {
                 id: languageCombo
+                Accessible.name: languageLabel.text + ": " + languageCombo.displayText
                 Layout.preferredWidth: 280
                 Layout.preferredHeight: 36
                 model: controller ? controller.supportedLanguages : []

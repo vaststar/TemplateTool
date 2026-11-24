@@ -44,6 +44,7 @@ Item {
                         spacing: 12
 
                         UTText {
+                            id: outputDirLabel
                             text: qsTr("Save to:")
                             fontEnum: UIFontToken.Body_Text
                             Layout.preferredWidth: 120
@@ -51,6 +52,7 @@ Item {
 
                         UTTextField {
                             id: outputDirField
+                            Accessible.name: outputDirLabel.text
                             Layout.fillWidth: true
                             text: controller.outputDirectory || controller.getDefaultSavePath()
                             readOnly: true
@@ -69,6 +71,7 @@ Item {
                         spacing: 12
 
                         UTText {
+                            id: videoFormatLabel
                             text: qsTr("Video format:")
                             fontEnum: UIFontToken.Body_Text
                             Layout.preferredWidth: 120
@@ -76,6 +79,7 @@ Item {
 
                         UTComboBox {
                             id: videoFormatCombo
+                            Accessible.name: videoFormatLabel.text + " " + videoFormatCombo.displayText
                             model: ["mp4", "webm", "mov", "gif"]
                             currentIndex: model.indexOf(controller.videoFormat)
                             onCurrentTextChanged: {
@@ -103,6 +107,7 @@ Item {
                         spacing: 12
 
                         UTText {
+                            id: frameRateLabel
                             text: qsTr("Frame rate:")
                             fontEnum: UIFontToken.Body_Text
                             Layout.preferredWidth: 120
@@ -110,6 +115,7 @@ Item {
 
                         UTComboBox {
                             id: fpsCombo
+                            Accessible.name: frameRateLabel.text + " " + fpsCombo.displayText
                             model: [
                                 { text: qsTr("15 fps (small size)"), value: 15 },
                                 { text: qsTr("30 fps (standard)"), value: 30 },
@@ -138,6 +144,7 @@ Item {
                         spacing: 12
 
                         UTText {
+                            id: microphoneLabel
                             text: qsTr("Microphone:")
                             fontEnum: UIFontToken.Body_Text
                             Layout.preferredWidth: 120
@@ -145,6 +152,7 @@ Item {
 
                         UTCheckBox {
                             id: micCheckBox
+                            Accessible.name: microphoneLabel.text
                             checked: controller.enableMicrophone
                             onToggled: {
                                 root.controller.enableMicrophone = checked
@@ -159,6 +167,7 @@ Item {
 
                         UTComboBox {
                             id: micDeviceCombo
+                            Accessible.name: microphoneLabel.text + " " + micDeviceCombo.displayText
                             visible: controller.enableMicrophone
                             enabled: controller.enableMicrophone
                             model: controller.micDevices
@@ -195,6 +204,7 @@ Item {
                         spacing: 12
 
                         UTText {
+                            id: systemAudioLabel
                             text: qsTr("System Audio:")
                             fontEnum: UIFontToken.Body_Text
                             Layout.preferredWidth: 120
@@ -202,12 +212,14 @@ Item {
 
                         UTCheckBox {
                             id: sysAudioCheckBox
+                            Accessible.name: systemAudioLabel.text
                             checked: controller.enableSystemAudio
                             onToggled: controller.enableSystemAudio = checked
                         }
 
                         UTComboBox {
                             id: sysAudioDeviceCombo
+                            Accessible.name: systemAudioLabel.text + " " + sysAudioDeviceCombo.displayText
                             visible: controller.enableSystemAudio
                             enabled: controller.enableSystemAudio
                             model: controller.systemAudioDevices

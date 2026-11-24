@@ -45,10 +45,22 @@ Dialog {
         width: parent.width; spacing: 12
         GridLayout {
             columns: 2; columnSpacing: 10; rowSpacing: 8; Layout.fillWidth: true
-            UTText { text: qsTr("Pattern:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-            UTTextField { id: ptPattern; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("Regex pattern (e.g. /api/user.*)") }
-            UTText { text: qsTr("Test URL:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-            UTTextField { id: ptTestUrl; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("https://example.com/api/user/123") }
+            UTText { id: patternLabel; text: qsTr("Pattern:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
+            UTTextField {
+                id: ptPattern
+                Accessible.name: patternLabel.text
+                Layout.fillWidth: true
+                fontEnum: UIFontToken.Monospace_Text
+                placeholderText: qsTr("Regex pattern (e.g. /api/user.*)")
+            }
+            UTText { id: testUrlLabel; text: qsTr("Test URL:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
+            UTTextField {
+                id: ptTestUrl
+                Accessible.name: testUrlLabel.text
+                Layout.fillWidth: true
+                fontEnum: UIFontToken.Monospace_Text
+                placeholderText: qsTr("https://example.com/api/user/123")
+            }
         }
         RowLayout {
             spacing: 8; Layout.alignment: Qt.AlignHCenter

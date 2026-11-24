@@ -46,6 +46,7 @@ Item {
             spacing: 4
 
             UTText {
+                id: inputLabel
                 text: qsTr("Input")
                 fontEnum: UIFontToken.Body_Text
                 colorEnum: UIColorToken.Content_Secondary_Text
@@ -57,6 +58,7 @@ Item {
 
                 UTTextArea {
                     id: inputArea
+                    Accessible.name: inputLabel.text
                     text: controller.inputText
                     onTextChanged: controller.inputText = text
                     placeholderText: qsTr("Enter text here...")
@@ -106,6 +108,7 @@ Item {
 
             RowLayout {
                 UTText {
+                    id: outputLabel
                     text: qsTr("Output")
                     fontEnum: UIFontToken.Body_Text
                     colorEnum: UIColorToken.Content_Secondary_Text
@@ -124,6 +127,7 @@ Item {
 
                 UTTextArea {
                     id: outputArea
+                    Accessible.name: outputLabel.text
                     text: controller.outputText
                     readOnly: true
                 }

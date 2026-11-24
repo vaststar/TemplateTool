@@ -27,9 +27,10 @@ Item {
                 onClicked: controller.proxyRunning ? controller.stopProxy() : controller.startProxy()
             }
 
-            UTText { text: qsTr("Port:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
+            UTText { id: proxyPortLabel; text: qsTr("Port:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
             UTTextField {
                 id: proxyPortInput; implicitWidth: 60
+                Accessible.name: proxyPortLabel.text
                 fontEnum: UIFontToken.Monospace_Text
                 text: controller.proxyPort.toString()
                 enabled: !controller.proxyRunning

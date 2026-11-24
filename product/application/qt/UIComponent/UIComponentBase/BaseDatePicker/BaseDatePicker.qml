@@ -30,6 +30,8 @@ Control {
 
     focusPolicy: Qt.StrongFocus
 
+    Accessible.role: Accessible.Button
+
     signal dateChanged()
     // Emitted just before the popup shows, so a style can sync its editor to
     // selectedDate (e.g. the calendar resets its browsed month / view).

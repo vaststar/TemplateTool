@@ -95,6 +95,8 @@ BaseComboBox {
         required property int index
         required property var model
 
+        Accessible.name: delegateText.text
+
         width: control.popupContentWidth
         height: control.itemHeight
         padding: 0

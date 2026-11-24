@@ -28,11 +28,12 @@ Item {
                 contentItem: GridLayout {
                     columns: 2; columnSpacing: 16; rowSpacing: 10
 
-                    UTText { text: qsTr("Proxy Port:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
+                    UTText { id: proxyPortLabel; text: qsTr("Proxy Port:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
                     RowLayout {
                         spacing: 8
                         UTTextField {
                             id: settingsPort; implicitWidth: 80
+                            Accessible.name: proxyPortLabel.text
                             fontEnum: UIFontToken.Monospace_Text
                             text: root.controller.proxyPort.toString()
                             validator: IntValidator { bottom: 1024; top: 65535 }

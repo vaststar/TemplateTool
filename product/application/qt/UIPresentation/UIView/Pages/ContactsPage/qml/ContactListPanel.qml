@@ -63,6 +63,7 @@ Item {
 
             UTTextField {
                 id: searchField
+                Accessible.name: placeholderText
                 Layout.fillWidth: true
                 Layout.preferredHeight: 30
                 borderRadius: 8
@@ -80,6 +81,7 @@ Item {
 
                 UTButton {
                     id: clearButton
+                    Accessible.name: qsTr("Clear search")
                     appearance: UTButton.Ghost
                     anchors.right: parent.right
                     anchors.rightMargin: 4

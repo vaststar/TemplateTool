@@ -35,6 +35,7 @@ Item {
             spacing: 16
 
             UTText {
+                id: indentLabel
                 text: qsTr("Indent spaces:")
                 fontEnum: UIFontToken.Body_Text
                 colorEnum: UIColorToken.Content_Text
@@ -42,6 +43,7 @@ Item {
 
             UTSpinBox {
                 id: indentSpinBox
+                Accessible.name: indentLabel.text
                 from: 0
                 to: 8
                 value: controller.indentSize
@@ -55,6 +57,7 @@ Item {
             spacing: 4
 
             UTText {
+                id: inputLabel
                 text: qsTr("Input JSON")
                 fontEnum: UIFontToken.Body_Text
                 colorEnum: UIColorToken.Content_Secondary_Text
@@ -66,6 +69,7 @@ Item {
 
                 UTTextArea {
                     id: inputArea
+                    Accessible.name: inputLabel.text
                     text: controller.inputText
                     onTextChanged: controller.inputText = text
                     placeholderText: qsTr("Enter JSON here...")
@@ -120,6 +124,7 @@ Item {
 
             RowLayout {
                 UTText {
+                    id: outputLabel
                     text: controller.treeViewMode ? qsTr("Tree View") : qsTr("Output")
                     fontEnum: UIFontToken.Body_Text
                     colorEnum: UIColorToken.Content_Secondary_Text
@@ -141,6 +146,7 @@ Item {
 
                 UTTextArea {
                     id: outputArea
+                    Accessible.name: outputLabel.text
                     text: controller.outputText
                     readOnly: true
                 }

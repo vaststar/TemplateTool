@@ -25,6 +25,7 @@ UTDialog
         // Header
         UTText
         {
+            id: updateStatusLabel
             text:
             {
                 if (dialog.controller.openingInstaller)
@@ -108,6 +109,7 @@ UTDialog
 
             UTProgressBar
             {
+                Accessible.name: updateStatusLabel.text
                 from: 0; to: 1.0
                 value: dialog.controller.downloadProgress
                 Layout.fillWidth: true

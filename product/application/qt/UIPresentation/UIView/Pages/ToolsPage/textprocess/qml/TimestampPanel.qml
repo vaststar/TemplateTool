@@ -104,6 +104,7 @@ Item {
 
                         UTTextField {
                             id: tsInput
+                            Accessible.name: qsTr("Timestamp")
                             Layout.fillWidth: true
                             placeholderText: qsTr("Enter timestamp...")
                             text: controller.timestampInput
@@ -146,6 +147,7 @@ Item {
 
                         UTTextField {
                             id: dtInput
+                            Accessible.name: qsTr("Date and time")
                             Layout.fillWidth: true
                             placeholderText: qsTr("Format: YYYY-MM-DD HH:MM:SS")
                             text: controller.dateTimeInput
@@ -153,6 +155,7 @@ Item {
                         }
 
                         UTComboBox {
+                            Accessible.name: qsTr("Time zone") + ": " + displayText
                             Layout.preferredWidth: 180
                             model: controller.timezoneModel
                             currentIndex: controller.dtTimezoneIndex

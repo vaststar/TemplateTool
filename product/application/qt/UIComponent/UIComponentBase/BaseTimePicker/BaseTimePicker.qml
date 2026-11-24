@@ -45,6 +45,9 @@ Control {
 
     focusPolicy: Qt.StrongFocus
 
+    Accessible.role: Accessible.Button
+    Accessible.name: control.timeValue
+
     // === Read-only formatted output, convenient for bindings ===
     readonly property string timeValue: {
         const pad = n => (n < 10 ? "0" + n : "" + n)

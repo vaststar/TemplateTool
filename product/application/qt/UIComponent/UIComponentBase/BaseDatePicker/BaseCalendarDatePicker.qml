@@ -69,6 +69,7 @@ BaseDatePicker {
     // === Presentation (collapsed box text) ===
     property string displayFormat: "yyyy-MM-dd"
     readonly property string dateValue: Qt.formatDate(selectedDate, displayFormat)
+    Accessible.name: control.dateValue
 
     // === Calendar browsing state (this style only) ===
     // Currently browsed month (may differ from selectedDate's month).
@@ -366,6 +367,7 @@ BaseDatePicker {
                 Layout.preferredWidth: control.cellSize
                 Layout.preferredHeight: control.cellSize
                 text: "\u2039"
+                Accessible.name: qsTr("Previous page")
                 font: control.navigationFont
                 backgroundColor: control.navigationBackgroundColorFor(previousButton)
                 textColor: control.navigationTextColorFor(previousButton)
@@ -430,6 +432,7 @@ BaseDatePicker {
                 Layout.preferredWidth: control.cellSize
                 Layout.preferredHeight: control.cellSize
                 text: "\u203A"
+                Accessible.name: qsTr("Next page")
                 font: control.navigationFont
                 backgroundColor: control.navigationBackgroundColorFor(nextButton)
                 textColor: control.navigationTextColorFor(nextButton)

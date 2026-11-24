@@ -224,6 +224,7 @@ Item {
                         spacing: 8
                         UTCheckBox {
                             id: savedEnabledCheck
+                            Accessible.name: qsTr("Enable rule: %1").arg(ruleTitle.text)
                             checked: ruleRow.modelData.enabled
                             onToggled: {
                                 const ruleId = ruleRow.modelData.id
@@ -244,6 +245,7 @@ Item {
                             Layout.fillWidth: true
                             spacing: 2
                             UTText {
+                                id: ruleTitle
                                 Layout.fillWidth: true
                                 text: qsTr("%1 · %2 · %3").arg(ruleRow.modelData.stage === "request" ? qsTr("Request") : qsTr("Response"))
                                     .arg(ruleRow.modelData.method).arg(ruleRow.modelData.url_pattern)
@@ -263,6 +265,7 @@ Item {
                         UTButton {
                             appearance: UTButton.Ghost
                             text: "↑"; implicitWidth: 28; implicitHeight: 26
+                            Accessible.name: qsTr("Move rule up")
                             enabled: ruleRow.index > 0
                             onClicked: {
                                 root.localError = ""
@@ -273,6 +276,7 @@ Item {
                         UTButton {
                             appearance: UTButton.Ghost
                             text: "↓"; implicitWidth: 28; implicitHeight: 26
+                            Accessible.name: qsTr("Move rule down")
                             enabled: ruleRow.index < ruleList.count - 1
                             onClicked: {
                                 root.localError = ""
@@ -283,6 +287,7 @@ Item {
                         UTButton {
                             appearance: UTButton.Destructive
                             text: "✕"; implicitWidth: 28; implicitHeight: 26
+                            Accessible.name: qsTr("Remove rule")
                             onClicked: {
                                 root.localError = ""
                                 root.showManagerError = true
@@ -323,12 +328,18 @@ Item {
                     columns: 2
                     columnSpacing: 10
                     rowSpacing: 8
-                    UTText { text: qsTr("URL Pattern:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
+                    UTText {
+                        id: ruleUrlLabel
+                        text: qsTr("URL Pattern:")
+                        fontEnum: UIFontToken.Body_Text
+                        colorEnum: UIColorToken.Content_Text
+                    }
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 8
                         UTTextField {
                             id: ruleUrl
+                            Accessible.name: ruleUrlLabel.text
                             Layout.fillWidth: true
                             fontEnum: UIFontToken.Monospace_Text
                             placeholderText: qsTr("e.g. /api/user.*")
@@ -340,18 +351,25 @@ Item {
                             onClicked: root.testPattern(ruleUrl.text)
                         }
                     }
-                    UTText { text: qsTr("Target:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
+                    UTText {
+                        id: ruleTargetLabel
+                        text: qsTr("Target:")
+                        fontEnum: UIFontToken.Body_Text
+                        colorEnum: UIColorToken.Content_Text
+                    }
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 8
                         UTComboBox {
                             id: ruleStage
+                            Accessible.name: ruleTargetLabel.text + " " + ruleStage.displayText
                             Layout.preferredWidth: 120
                             model: [qsTr("Request"), qsTr("Response")]
                             currentIndex: 1
                         }
                         UTComboBox {
                             id: ruleMethod
+                            Accessible.name: qsTr("HTTP method") + ": " + ruleMethod.displayText
                             Layout.preferredWidth: 100
                             model: root.methods
                         }
@@ -378,6 +396,7 @@ Item {
                         Layout.fillWidth: true
                         spacing: 8
                         UTComboBox {
+                            Accessible.name: qsTr("Header operation") + ": " + displayText
                             Layout.preferredWidth: 100
                             model: [qsTr("Set"), qsTr("Add"), qsTr("Remove")]
                             currentIndex: Math.max(0, root.headerOperations.indexOf(headerRow.operation))
@@ -386,6 +405,7 @@ Item {
                             }
                         }
                         UTTextField {
+                            Accessible.name: placeholderText
                             Layout.fillWidth: true
                             Layout.preferredWidth: 150
                             fontEnum: UIFontToken.Monospace_Text
@@ -394,6 +414,7 @@ Item {
                             onTextEdited: headerFormModel.setProperty(headerRow.index, "headerName", text)
                         }
                         UTTextField {
+                            Accessible.name: placeholderText
                             Layout.fillWidth: true
                             Layout.preferredWidth: 200
                             enabled: headerRow.operation !== "remove"
@@ -402,7 +423,13 @@ Item {
                             text: headerRow.headerValue
                             onTextEdited: headerFormModel.setProperty(headerRow.index, "headerValue", text)
                         }
-                        UTButton { appearance: UTButton.Ghost; text: "✕"; implicitWidth: 28; onClicked: headerFormModel.remove(headerRow.index) }
+                        UTButton {
+                            appearance: UTButton.Ghost
+                            text: "✕"
+                            Accessible.name: qsTr("Remove header change")
+                            implicitWidth: 28
+                            onClicked: headerFormModel.remove(headerRow.index)
+                        }
                     }
                 }
                 UTButton {
@@ -412,14 +439,21 @@ Item {
                     onClicked: headerFormModel.append({ operation: "set", headerName: "", headerValue: "" })
                 }
 
-                UTText { text: qsTr("Body Change"); fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Section_Title }
+                UTText {
+                    id: bodyChangeLabel
+                    text: qsTr("Body Change")
+                    fontEnum: UIFontToken.Body_Text_Medium
+                    colorEnum: UIColorToken.Content_Section_Title
+                }
                 UTComboBox {
                     id: bodyType
+                    Accessible.name: bodyChangeLabel.text + ": " + bodyType.displayText
                     Layout.fillWidth: true
                     model: [qsTr("Keep body"), qsTr("Replace body"), qsTr("Set JSON field"), qsTr("Remove JSON field"), qsTr("Find and replace text")]
                 }
                 UTTextField {
                     id: jsonPath
+                    Accessible.name: qsTr("JSON field path")
                     Layout.fillWidth: true
                     visible: root.bodyOperation === "json_set" || root.bodyOperation === "json_remove"
                     fontEnum: UIFontToken.Monospace_Text
@@ -435,6 +469,7 @@ Item {
                 }
                 UTText {
                     visible: root.bodyOperation === "replace" || root.bodyOperation === "json_set"
+                    id: bodyValueLabel
                     text: root.bodyOperation === "json_set" ? qsTr("JSON Value:") : qsTr("Replacement Body:")
                     fontEnum: UIFontToken.Body_Text
                     colorEnum: UIColorToken.Content_Text
@@ -445,6 +480,7 @@ Item {
                     visible: root.bodyOperation === "replace" || root.bodyOperation === "json_set"
                     UTTextArea {
                         id: bodyValue
+                        Accessible.name: bodyValueLabel.text
                         wrapMode: TextEdit.Wrap
                         placeholderText: root.bodyOperation === "json_set"
                             ? qsTr("Enter valid JSON: true, null, 123, \"text\", an array or an object")
@@ -453,6 +489,7 @@ Item {
                 }
                 UTText {
                     visible: root.bodyOperation === "text_replace"
+                    id: findTextLabel
                     text: qsTr("Find Text (literal):")
                     fontEnum: UIFontToken.Body_Text
                     colorEnum: UIColorToken.Content_Text
@@ -461,10 +498,16 @@ Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 90
                     visible: root.bodyOperation === "text_replace"
-                    UTTextArea { id: findText; wrapMode: TextEdit.Wrap; placeholderText: qsTr("Text to find") }
+                    UTTextArea {
+                        id: findText
+                        Accessible.name: findTextLabel.text
+                        wrapMode: TextEdit.Wrap
+                        placeholderText: qsTr("Text to find")
+                    }
                 }
                 UTText {
                     visible: root.bodyOperation === "text_replace"
+                    id: replacementTextLabel
                     text: qsTr("Replace With:")
                     fontEnum: UIFontToken.Body_Text
                     colorEnum: UIColorToken.Content_Text
@@ -473,7 +516,12 @@ Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 90
                     visible: root.bodyOperation === "text_replace"
-                    UTTextArea { id: replacementText; wrapMode: TextEdit.Wrap; placeholderText: qsTr("Replacement text; leave empty to remove matches") }
+                    UTTextArea {
+                        id: replacementText
+                        Accessible.name: replacementTextLabel.text
+                        wrapMode: TextEdit.Wrap
+                        placeholderText: qsTr("Replacement text; leave empty to remove matches")
+                    }
                 }
                 Item { Layout.preferredHeight: 4 }
             }

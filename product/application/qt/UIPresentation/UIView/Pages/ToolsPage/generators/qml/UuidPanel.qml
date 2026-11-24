@@ -50,6 +50,7 @@ Item {
 
                     UTTextField {
                         id: uuidOutput
+                        Accessible.name: qsTr("Generated UUID")
                         Layout.fillWidth: true
                         text: controller.generatedUuid
                         readOnly: true
@@ -79,6 +80,7 @@ Item {
 
                     UTTextField {
                         id: validateInput
+                        Accessible.name: qsTr("UUID to validate")
                         Layout.fillWidth: true
                         placeholderText: qsTr("Enter UUID to validate...")
                         text: controller.validateInput

@@ -24,6 +24,8 @@ BaseToolButton {
     borderWidth: appearance === UTButton.Ghost ? 0 : 1
     clip: false
 
+    Accessible.name: control.toolTipText || control.text
+
     font: UTComponentUtil.getUIFont(control.fontEnum)
     textColor: UTComponentUtil.getItemUIColor(control, control.fontColorEnum)
     backgroundColor: control.appearance === UTButton.Ghost
