@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Templates as T
 import QtQuick.Layouts
 import QtQuick.Dialogs
 import UIView 1.0
@@ -85,12 +86,20 @@ Item {
                 }
             }
 
-            delegate: Item {
+            delegate: T.Button {
                 id: appCell
                 width: appGrid.cellWidth
                 height: appGrid.cellHeight
                 required property int index
                 required property var modelData
+
+                focusPolicy: Qt.NoFocus
+                Accessible.name: appCell.modelData.name
+
+                onClicked: {
+                    appGrid.focusOnItem(appCell.index)
+                    appGrid.itemInvoked(appCell.index)
+                }
 
                 Column {
                     anchors.centerIn: parent
@@ -107,6 +116,7 @@ Item {
 
                         Image {
                             id: appIcon
+                            Accessible.ignored: true
                             anchors.fill: parent
                             source: appCell.modelData.iconUrl !== undefined ? appCell.modelData.iconUrl : ""
                             fillMode: Image.PreserveAspectCrop
@@ -119,6 +129,7 @@ Item {
                             anchors.centerIn: parent
                             visible: !appIcon.visible
                             text: appCell.modelData.name.length > 0 ? appCell.modelData.name.charAt(0) : "?"
+                            Accessible.ignored: true
                             fontEnum: UIFontToken.Subtitle_Text
                             colorEnum: UIColorToken.Sidebar_Item_Text
                         }
@@ -128,6 +139,7 @@ Item {
                         width: parent.width
                         horizontalAlignment: Text.AlignHCenter
                         text: appCell.modelData.name
+                        Accessible.ignored: true
                         fontEnum: UIFontToken.Subtitle_Text
                         colorEnum: UIColorToken.Sidebar_Item_Text
                     }
@@ -142,16 +154,12 @@ Item {
 
                 MouseArea {
                     anchors.fill: parent
-                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    acceptedButtons: Qt.RightButton
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: function(mouse) {
+                    onClicked: {
                         appGrid.focusOnItem(appCell.index)
-                        if (mouse.button === Qt.RightButton) {
-                            miniAppsPage.contextAppId = appCell.modelData.id
-                            contextMenu.popup()
-                        } else {
-                            miniAppsPage.controller.launchMiniApp(appCell.modelData.id)
-                        }
+                        miniAppsPage.contextAppId = appCell.modelData.id
+                        contextMenu.popup()
                     }
                 }
             }

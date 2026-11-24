@@ -13,6 +13,9 @@ import UIResourceLoader 1.0
 Item {
     id: root
 
+    Accessible.role: Accessible.ListItem
+    Accessible.name: model.fileName
+
     height: 28
     z: root.isCurrent ? 1 : 0
 
@@ -76,6 +79,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.minimumWidth: 0
                 text: model.fileName
+                Accessible.ignored: true
                 fontEnum: UIFontToken.Body_Text
                 color: root.isSelected ? root._textSelected : root._textNormal
                 elide: Text.ElideLeft

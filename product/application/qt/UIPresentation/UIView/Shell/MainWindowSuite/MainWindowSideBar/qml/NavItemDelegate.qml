@@ -7,6 +7,7 @@ import UIResourceLoader 1.0
 ItemDelegate {
     id: navItem
     text: title
+    Accessible.role: Accessible.Button
     height: isVisible ? 44 : 0
     visible: isVisible
     enabled: isEnabled

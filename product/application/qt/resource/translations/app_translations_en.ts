@@ -86,12 +86,12 @@ Close this terminal to cancel.</source>
 <context>
     <name>AppearanceSettingsPanel</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/qml/AppearanceSettingsPanel.qml" line="23"/>
+        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/qml/AppearanceSettingsPanel.qml" line="24"/>
         <source>Themes</source>
         <translation>Themes</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/qml/AppearanceSettingsPanel.qml" line="29"/>
+        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/qml/AppearanceSettingsPanel.qml" line="30"/>
         <source>Choose how you want the app to look.</source>
         <translation>Choose how you want the app to look.</translation>
     </message>
@@ -748,32 +748,32 @@ Close this terminal to cancel.</source>
 <context>
     <name>MiniAppListPage</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="27"/>
+        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="28"/>
         <source>Mini Apps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="35"/>
+        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="36"/>
         <source>Add Mini App</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="46"/>
+        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="47"/>
         <source>No mini apps installed. Click &quot;Add Mini App&quot; to install one.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="167"/>
+        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="175"/>
         <source>Launch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="172"/>
+        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="180"/>
         <source>Uninstall</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="180"/>
+        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="188"/>
         <source>Select Mini App Folder</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1226,7 +1226,7 @@ Proxy: 127.0.0.1:%1</translation>
 <context>
     <name>NetworkRulesTab</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="236"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="307"/>
         <source>Waiting...</source>
         <translation>Waiting...</translation>
     </message>
@@ -1276,313 +1276,313 @@ Proxy: 127.0.0.1:%1</translation>
         <translation>Match requests by URL pattern and return a custom response. Mocked requests will appear in Capture with a &quot;MOCK&quot; tag.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="94"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="96"/>
         <source>URL Pattern:</source>
         <translation>URL Pattern:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="95"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="106"/>
         <source>e.g. /api/user.*</source>
         <translation>e.g. /api/user.*</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="96"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="166"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="108"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="237"/>
         <source>🧪 Test</source>
         <translation>🧪 Test</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="97"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="111"/>
         <source>Status:</source>
         <translation>Status:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="99"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="125"/>
         <source>Content-Type:</source>
         <translation>Content-Type:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="101"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="139"/>
         <source>Headers:</source>
         <translation>Headers:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="102"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="149"/>
         <source>X-Custom: value  (one per line or comma-separated)</source>
         <translation>X-Custom: value  (one per line or comma-separated)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="103"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="153"/>
         <source>Body:</source>
         <translation>Body:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="104"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="163"/>
         <source>{&quot;message&quot;: &quot;mocked&quot;}</source>
         <translation>{&quot;message&quot;: &quot;mocked&quot;}</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="108"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="168"/>
         <source>+ Add Rule</source>
         <translation>+ Add Rule</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="110"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="168"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="170"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="239"/>
         <source>Clear All</source>
         <translation>Clear All</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="140"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="200"/>
         <source>No mock rules. Add one above.
 Double-click a rule to view details.</source>
         <translation>No mock rules. Add one above.
 Double-click a rule to view details.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="148"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="208"/>
         <source>Breakpoint Rules</source>
         <translation>Breakpoint Rules</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="149"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="209"/>
         <source>Pause matching requests so you can inspect or modify them before forwarding.</source>
         <translation>Pause matching requests so you can inspect or modify them before forwarding.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="156"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="216"/>
         <source>⚠️ Interception is OFF — breakpoints won&apos;t take effect.</source>
         <translation>⚠️ Interception is OFF — breakpoints won&apos;t take effect.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="157"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="217"/>
         <source>Enable</source>
         <translation>Enable</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="163"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="326"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="228"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="408"/>
         <source>URL pattern (regex)</source>
         <translation>URL pattern (regex)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="165"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="290"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="328"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="382"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="464"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="236"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="367"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="417"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="477"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="571"/>
         <source>+ Add</source>
         <translation>+ Add</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="204"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="275"/>
         <source>No breakpoint rules.</source>
         <translation>No breakpoint rules.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="210"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="281"/>
         <source>Paused Requests (%1)</source>
         <translation>Paused Requests (%1)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="236"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="307"/>
         <source>▶ Forward</source>
         <translation>▶ Forward</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="242"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="313"/>
         <source>✕ Drop</source>
         <translation>✕ Drop</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="254"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="325"/>
         <source>▶ Forward All (%1)</source>
         <translation>▶ Forward All (%1)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="260"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="331"/>
         <source>✕ Drop All (%1)</source>
         <translation>✕ Drop All (%1)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="272"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="343"/>
         <source>How to use Breakpoints:</source>
         <translation>How to use Breakpoints:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="273"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="344"/>
         <source>1. Add a URL pattern rule above (regex)</source>
         <translation>1. Add a URL pattern rule above (regex)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="274"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="345"/>
         <source>2. Interception is auto-enabled when you add a rule</source>
         <translation>2. Interception is auto-enabled when you add a rule</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="275"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="346"/>
         <source>3. When a matching request arrives, it pauses and appears in &quot;Paused Requests&quot;</source>
         <translation>3. When a matching request arrives, it pauses and appears in &quot;Paused Requests&quot;</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="276"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="347"/>
         <source>4. Click &quot;▶ Forward&quot; to let it through, or &quot;✕ Drop&quot; to block it (returns 502)</source>
         <translation>4. Click &quot;▶ Forward&quot; to let it through, or &quot;✕ Drop&quot; to block it (returns 502)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="277"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="348"/>
         <source>5. Paused requests auto-forward after 5 minutes timeout</source>
         <translation>5. Paused requests auto-forward after 5 minutes timeout</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="285"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="356"/>
         <source>Blacklist Rules</source>
         <translation>Blacklist Rules</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="286"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="357"/>
         <source>Block matching requests entirely. They will receive a 403 response.</source>
         <translation>Block matching requests entirely. They will receive a 403 response.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="289"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="365"/>
         <source>URL pattern to block (regex)</source>
         <translation>URL pattern to block (regex)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="314"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="391"/>
         <source>No blacklist rules.</source>
         <translation>No blacklist rules.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="322"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="399"/>
         <source>Map Local Rules</source>
         <translation>Map Local Rules</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="323"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="400"/>
         <source>Serve a local file instead of the remote response for matching URLs.</source>
         <translation>Serve a local file instead of the remote response for matching URLs.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="327"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="415"/>
         <source>Local file path</source>
         <translation>Local file path</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="351"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="440"/>
         <source>No map local rules.</source>
         <translation>No map local rules.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="360"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="449"/>
         <source>Bypass Hosts (Passthrough)</source>
         <translation>Bypass Hosts (Passthrough)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="362"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="451"/>
         <source>Requests matching these host regex patterns will bypass MITM decryption. Useful for AI tools (GPT/Codex/豆包) that use certificate pinning.</source>
         <translation>Requests matching these host regex patterns will bypass MITM decryption. Useful for AI tools (GPT/Codex/豆包) that use certificate pinning.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="372"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="461"/>
         <source>Note: bypassed hosts will not show request/response details in Capture.</source>
         <translation>Note: bypassed hosts will not show request/response details in Capture.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="373"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="462"/>
         <source>They are forwarded directly so the app can connect successfully.</source>
         <translation>They are forwarded directly so the app can connect successfully.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="379"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="473"/>
         <source>Host regex, e.g. (^|.)openai.com(:d+)?$</source>
         <translation>Host regex, e.g. (^|.)openai.com(:d+)?$</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="395"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="490"/>
         <source>Reload</source>
         <translation>Reload</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="398"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="493"/>
         <source>Reset Default</source>
         <translation>Reset Default</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="448"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="543"/>
         <source>No bypass hosts. Add one above.</source>
         <translation>No bypass hosts. Add one above.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="458"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="553"/>
         <source>Map Remote Rules</source>
         <translation>Map Remote Rules</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="459"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="554"/>
         <source>Redirect matching requests to a different URL.</source>
         <translation>Redirect matching requests to a different URL.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="462"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="562"/>
         <source>Source URL pattern (regex)</source>
         <translation>Source URL pattern (regex)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="463"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="569"/>
         <source>Destination URL</source>
         <translation>Destination URL</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="487"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="594"/>
         <source>No map remote rules.</source>
         <translation>No map remote rules.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="495"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="602"/>
         <source>Bandwidth Throttle</source>
         <translation>Bandwidth Throttle</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="496"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="603"/>
         <source>Simulate slow network conditions by limiting bandwidth.</source>
         <translation>Simulate slow network conditions by limiting bandwidth.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="498"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="605"/>
         <source>Enable Throttle</source>
         <translation>Enable Throttle</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="504"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="613"/>
         <source>Download:</source>
         <translation>Download:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="506"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="510"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="626"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="643"/>
         <source>%1 KB/s</source>
         <translation>%1 KB/s</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="506"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="510"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="626"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="643"/>
         <source>Unlimited</source>
         <translation>Unlimited</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="508"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="630"/>
         <source>Upload:</source>
         <translation>Upload:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="515"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="648"/>
         <source>Presets:</source>
         <translation>Presets:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="531"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="664"/>
         <source>Apply</source>
         <translation>Apply</translation>
     </message>
@@ -1592,16 +1592,16 @@ Double-click a rule to view details.</translation>
         <translation>Rewrite</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="133"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="197"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="307"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="344"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="480"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="193"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="268"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="384"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="433"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="587"/>
         <source>Remove rule: %1</source>
         <translation>Remove rule: %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="434"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="529"/>
         <source>Remove bypass host: %1</source>
         <translation>Remove bypass host: %1</translation>
     </message>
@@ -2425,52 +2425,52 @@ Double-click a rule to view details.</translation>
         <translation>🎬 Start Recording</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="322"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="323"/>
         <source>Full Screen</source>
         <translation>Full Screen</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="323"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="324"/>
         <source>Select Region</source>
         <translation>Select Region</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="334"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="335"/>
         <source>⚠ FFmpeg not found</source>
         <translation>⚠ FFmpeg not found</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="343"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="344"/>
         <source>📂 Open Folder</source>
         <translation>📂 Open Folder</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="351"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="352"/>
         <source>Screen recording access is required to record your screen.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="378"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="379"/>
         <source>No recordings yet</source>
         <translation>No recordings yet</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="379"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="380"/>
         <source>Click &apos;Start Recording&apos; to capture your screen</source>
         <translation>Click &apos;Start Recording&apos; to capture your screen</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="380"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="381"/>
         <source>%1 recordings</source>
         <translation>%1 recordings</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="393"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="394"/>
         <source>▶ Open</source>
         <translation>▶ Open</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="400"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="401"/>
         <source>🗑 Delete</source>
         <translation>🗑 Delete</translation>
     </message>
@@ -2698,31 +2698,31 @@ Press ESC to cancel</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="129"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="428"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="452"/>
         <source>Replace body</source>
         <translation>Replace body</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="130"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="428"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="452"/>
         <source>Set JSON field</source>
         <translation>Set JSON field</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="131"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="428"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="452"/>
         <source>Remove JSON field</source>
         <translation>Remove JSON field</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="132"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="428"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="452"/>
         <source>Find and replace text</source>
         <translation>Find and replace text</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="133"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="428"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="452"/>
         <source>Keep body</source>
         <translation>Keep body</translation>
     </message>
@@ -2757,194 +2757,194 @@ Press ESC to cancel</translation>
         <translation>Clear All</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="248"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="250"/>
         <source>%1 · %2 · %3</source>
         <translation>%1 · %2 · %3</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="248"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="353"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="250"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="367"/>
         <source>Request</source>
         <translation>Request</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="248"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="353"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="250"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="367"/>
         <source>Response</source>
         <translation>Response</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="262"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="264"/>
         <source>Edit</source>
         <translation>Edit</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="300"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="302"/>
         <source>No rewrite rules. Configure one below.</source>
         <translation>No rewrite rules. Configure one below.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="319"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="321"/>
         <source>Edit Rewrite Rule</source>
         <translation>Edit Rewrite Rule</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="319"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="321"/>
         <source>New Rewrite Rule</source>
         <translation>New Rewrite Rule</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="329"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="333"/>
         <source>URL Pattern:</source>
         <translation>URL Pattern:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="337"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="345"/>
         <source>e.g. /api/user.*</source>
         <translation>e.g. /api/user.*</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="341"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="349"/>
         <source>Test</source>
         <translation>Test</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="346"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="356"/>
         <source>Target:</source>
         <translation>Target:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="361"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="376"/>
         <source>Enabled</source>
         <translation>Enabled</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="365"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="380"/>
         <source>Header Changes</source>
         <translation>Header Changes</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="368"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="383"/>
         <source>Set replaces existing values; Add keeps them; Remove deletes the header. Header names are case-insensitive.</source>
         <translation>Set replaces existing values; Add keeps them; Remove deletes the header. Header names are case-insensitive.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="385"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="401"/>
         <source>Set</source>
         <translation>Set</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="385"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="401"/>
         <source>Add</source>
         <translation>Add</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="385"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="401"/>
         <source>Remove</source>
         <translation>Remove</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="395"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="412"/>
         <source>Header name</source>
         <translation>Header name</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="404"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="422"/>
         <source>Header value</source>
         <translation>Header value</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="419"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="437"/>
         <source>+ Header Change</source>
         <translation>+ Header Change</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="424"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="444"/>
         <source>Body Change</source>
         <translation>Body Change</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="435"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="460"/>
         <source>JSON field path, e.g. /data/enabled</source>
         <translation>JSON field path, e.g. /data/enabled</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="440"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="465"/>
         <source>Use /items/0 for an array item, /items/- to append, ~0 for ~ and ~1 for /. The parent must exist. An empty path replaces the whole JSON document when setting a value.</source>
         <translation>Use /items/0 for an array item, /items/- to append, ~0 for ~ and ~1 for /. The parent must exist. An empty path replaces the whole JSON document when setting a value.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="447"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="473"/>
         <source>JSON Value:</source>
         <translation>JSON Value:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="447"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="473"/>
         <source>Replacement Body:</source>
         <translation>Replacement Body:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="459"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="486"/>
         <source>Enter valid JSON: true, null, 123, &quot;text&quot;, an array or an object</source>
         <translation>Enter valid JSON: true, null, 123, &quot;text&quot;, an array or an object</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="460"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="487"/>
         <source>Enter the new body. Leave empty to send an empty body.</source>
         <translation>Enter the new body. Leave empty to send an empty body.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="465"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="493"/>
         <source>Find Text (literal):</source>
         <translation>Find Text (literal):</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="473"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="505"/>
         <source>Text to find</source>
         <translation>Text to find</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="477"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="511"/>
         <source>Replace With:</source>
         <translation>Replace With:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="485"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="523"/>
         <source>Replacement text; leave empty to remove matches</source>
         <translation>Replacement text; leave empty to remove matches</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="504"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="543"/>
         <source>Save Changes</source>
         <translation>Save Changes</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="504"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="543"/>
         <source>Add Rule</source>
         <translation>Add Rule</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="508"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="547"/>
         <source>Reset Form</source>
         <translation>Reset Form</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="266"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="268"/>
         <source>Move rule up</source>
         <translation>Move rule up</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="277"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="279"/>
         <source>Move rule down</source>
         <translation>Move rule down</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="288"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="290"/>
         <source>Remove rule</source>
         <translation>Remove rule</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="411"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="429"/>
         <source>Remove header change</source>
         <translation>Remove header change</translation>
     </message>
@@ -3091,8 +3091,8 @@ Press ESC to cancel</translation>
 <context>
     <name>ScreenshotOverlay</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="599"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="602"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="601"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="604"/>
         <source>Could not save the screenshot. Please try again.</source>
         <translation>Could not save the screenshot. Please try again.</translation>
     </message>
@@ -3142,12 +3142,12 @@ Press ESC to cancel</translation>
         <translation>Add Text</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="530"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="531"/>
         <source>Enter text...</source>
         <translation>Enter text...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="570"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="572"/>
         <source>Click and drag to select region
 Press ESC to cancel</source>
         <translation>Click and drag to select region
@@ -3293,13 +3293,13 @@ Press ESC to cancel</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="85"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="127"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="128"/>
         <source>UTC</source>
         <translation>UTC</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="86"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="128"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="129"/>
         <source>Local Time</source>
         <translation>Local Time</translation>
     </message>
@@ -3314,39 +3314,39 @@ Press ESC to cancel</translation>
         <translation>Timestamp → DateTime</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="108"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="109"/>
         <source>Enter timestamp...</source>
         <translation>Enter timestamp...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="114"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="171"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="115"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="174"/>
         <source>Milliseconds</source>
         <translation>Milliseconds</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="121"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="164"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="122"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="167"/>
         <source>Convert</source>
         <translation>Convert</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="129"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="130"/>
         <source>Relative Time</source>
         <translation>Relative Time</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="138"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="139"/>
         <source>DateTime → Timestamp</source>
         <translation>DateTime → Timestamp</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="150"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="152"/>
         <source>Format: YYYY-MM-DD HH:MM:SS</source>
         <translation>Format: YYYY-MM-DD HH:MM:SS</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="170"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/qml/TimestampPanel.qml" line="173"/>
         <source>Seconds</source>
         <translation>Seconds</translation>
     </message>
@@ -3540,74 +3540,79 @@ Press ESC to cancel</translation>
         <translation>Version %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="82"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="83"/>
         <source>The installer open request was accepted. This application will close so you can continue installation.</source>
         <translation>The installer open request was accepted. This application will close so you can continue installation.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="84"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="85"/>
         <source>The disk image open request was accepted. This application will close. Drag the new app into Applications to replace it.</source>
         <translation>The disk image open request was accepted. This application will close. Drag the new app into Applications to replace it.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="86"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="87"/>
         <source>An installation terminal was requested. This application will close. In the terminal, wait until it has closed, then press Enter to install.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="87"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="88"/>
         <source>The package open request was accepted. This application will close so you can continue installation.</source>
         <translation>The package open request was accepted. This application will close so you can continue installation.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="120"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="121"/>
         <source>%1%</source>
         <translation>%1%</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="142"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="143"/>
         <source>You are using the latest version.</source>
         <translation>You are using the latest version.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="164"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="165"/>
         <source>Background</source>
         <translation>Background</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="172"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="173"/>
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="187"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="188"/>
         <source>Show Installer in Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="195"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="196"/>
         <source>Open Installer and Quit</source>
         <translation>Open Installer and Quit</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="195"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="196"/>
         <source>Open Terminal and Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="205"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="206"/>
         <source>Download Installer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="216"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="217"/>
         <source>Later</source>
         <translation>Later</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="216"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="217"/>
         <source>Close</source>
         <translation>Close</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="69"/>
+        <source>Release notes</source>
+        <translation>Release notes</translation>
     </message>
 </context>
 <context>
@@ -3633,37 +3638,37 @@ Press ESC to cancel</translation>
         <translation>Batch Generate (5)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/qml/UuidPanel.qml" line="61"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/qml/UuidPanel.qml" line="62"/>
         <source>Copy</source>
         <translation>Copy</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/qml/UuidPanel.qml" line="72"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/qml/UuidPanel.qml" line="73"/>
         <source>Validate UUID</source>
         <translation>Validate UUID</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/qml/UuidPanel.qml" line="83"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/qml/UuidPanel.qml" line="85"/>
         <source>Enter UUID to validate...</source>
         <translation>Enter UUID to validate...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/qml/UuidPanel.qml" line="91"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/qml/UuidPanel.qml" line="93"/>
         <source>Validate</source>
         <translation>Validate</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/qml/UuidPanel.qml" line="109"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/qml/UuidPanel.qml" line="111"/>
         <source>Generation History</source>
         <translation>Generation History</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/qml/UuidPanel.qml" line="117"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/qml/UuidPanel.qml" line="119"/>
         <source>Copy All</source>
         <translation>Copy All</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/qml/UuidPanel.qml" line="123"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/qml/UuidPanel.qml" line="125"/>
         <source>Clear History</source>
         <translation>Clear History</translation>
     </message>

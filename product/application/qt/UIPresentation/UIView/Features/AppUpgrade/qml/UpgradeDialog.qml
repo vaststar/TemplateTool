@@ -66,6 +66,7 @@ UTDialog
 
             UTTextArea
             {
+                Accessible.name: qsTr("Release notes")
                 readOnly: true
                 text: dialog.controller.releaseNotes
                 wrapMode: TextArea.Wrap

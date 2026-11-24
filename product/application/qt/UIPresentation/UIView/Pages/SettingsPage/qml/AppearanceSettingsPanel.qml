@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Templates as T
 import QtQuick.Layouts
 import UIView 1.0
 import UTComponent 1.0
@@ -51,16 +52,20 @@ Item {
     Component {
         id: themeCardComponent
 
-        Item {
+        T.RadioButton {
+            id: themeCard
+
             required property var modelData
             required property int index
 
             width: 160
             height: 148
-            activeFocusOnTab: true
+            focusPolicy: Qt.StrongFocus
+            text: modelData
+            checked: controller && controller.currentThemeIndex === index
 
-            Keys.onReturnPressed: if (controller) controller.setTheme(index)
-            Keys.onSpacePressed: if (controller) controller.setTheme(index)
+            Keys.onReturnPressed: click()
+            onClicked: if (controller) controller.setTheme(index)
 
             // Preview card colors per theme index
             // 0=SystemDefault (split), 1=Dark, 2=Light
@@ -74,7 +79,7 @@ Item {
             readonly property color previewAccent:    UTComponentUtil.getThemeUIColor(UIColorToken.Button_Primary_Background, UIColorState.Normal, !isLightPreview)
             readonly property color previewTextLine:  UTComponentUtil.getThemeUIColor(UIColorToken.Content_Secondary_Text, UIColorState.Normal, !isLightPreview)
 
-            readonly property bool isSelected: controller && controller.currentThemeIndex === index
+            readonly property bool isSelected: checked
 
             Column {
                 anchors.fill: parent
@@ -293,7 +298,8 @@ Item {
                     }
 
                     UTText {
-                        text: modelData
+                        text: themeCard.text
+                        Accessible.ignored: true
                         fontEnum: UIFontToken.Body_Text
                         colorEnum: UIColorToken.Sidebar_Item_Text
                         anchors.verticalCenter: parent.verticalCenter
@@ -301,13 +307,8 @@ Item {
                 }
             }
 
-            MouseArea {
-                anchors.fill: parent
+            HoverHandler {
                 cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                    parent.forceActiveFocus()
-                    if (controller) controller.setTheme(index)
-                }
             }
 
             UTFocusItem {
