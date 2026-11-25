@@ -14,8 +14,20 @@ BuildUnitTestModule(
         NetworkServiceImpl
         CoreFrameworkApi
         FakeCoreFramework
+        LibCurlClient
+        LoggerUtils
+        FilePathUtils
     TARGET_INCLUDE_FOLDER
         .
     IDE_FOLDER
         framework/services/test
 )
+
+if(UCF_BUILD_SERVICES_SHARED)
+    # Use the production handler sources without exporting private DLL symbols.
+    target_sources(NetworkServiceTests PRIVATE
+        ../NetworkServiceImpl/src/NetworkHttpHandler/NetworkHttpDownloadToFileHandler.cpp
+        ../NetworkServiceImpl/src/NetworkHttpHandler/NetworkHttpDownloadToMemoryHandler.cpp
+        ../NetworkServiceImpl/src/NetworkHttpHandler/NetworkHttpRestHandler.cpp
+    )
+endif()

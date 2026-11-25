@@ -238,13 +238,18 @@ std::string ClientInfoManager::getHangStoragePath() const
     ).string();
 }
 
-std::string ClientInfoManager::getCacheStoragePath() const
+static std::filesystem::path appCacheStoragePath()
 {
     return ucf::utilities::FilePathUtils::joinPaths(
         ucf::utilities::SystemUtils::getBaseCacheDir(),
         AppInfo::APP_STORAGE_NAME,
         APP_CACHE_FOLDER_NAME
-    ).string();
+    );
+}
+
+std::string ClientInfoManager::getCacheStoragePath() const
+{
+    return ucf::utilities::FilePathUtils::utf8FromPath(appCacheStoragePath());
 }
 
 std::string ClientInfoManager::getTempStoragePath() const
@@ -317,10 +322,8 @@ std::string ClientInfoManager::getMiniAppDataStoragePath() const
 
 std::string ClientInfoManager::getMiniAppCacheStoragePath() const
 {
-    return ucf::utilities::FilePathUtils::joinPaths(
-        std::filesystem::path(getCacheStoragePath()),
-        MINI_APP_ROOT_FOLDER_NAME
-    ).string();
+    return ucf::utilities::FilePathUtils::utf8FromPath(
+        appCacheStoragePath() / MINI_APP_ROOT_FOLDER_NAME);
 }
 
 }

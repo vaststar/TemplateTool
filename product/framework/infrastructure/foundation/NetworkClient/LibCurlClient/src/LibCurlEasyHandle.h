@@ -24,7 +24,7 @@ public:
     std::string getRequestId() const;
     void setTimeout(int timeoutSecs);
     void setInFileSizeLarge(size_t file_size);
-    void setCommonOptions();
+    CURLcode setCommonOptions();
     void enableCURLDebugPrint();
     void setRequestDataString(const std::string& jsonString);
     void setRequestDataBuffer(ucf::infrastructure::network::http::ByteBufferPtr buffer, ucf::infrastructure::network::http::UploadProgressFunction progressFunc);
@@ -34,6 +34,7 @@ public:
     size_t readRequestBody(char *data, size_t size);
     int seekRequestBody(curl_off_t offset, int origin);
 
+    void clearResponseHeaders() noexcept;
     void addResponseHeader(const std::string& key, const std::string& val);
     void headersCompleted();
     void appendResponseBody(char *data, size_t size);

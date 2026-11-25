@@ -10,7 +10,10 @@ class HttpRawRequest;
 class HttpDownloadToMemoryRequest;
 class HttpDownloadToFileRequest;
 
-/// @brief HTTP requests with callback-based responses.
+/// @brief HTTPS requests with callback-based responses.
+///
+/// Initial request URLs and followed redirects must use HTTPS. Raw requests
+/// return the original response for callers to inspect redirects.
 ///
 /// Callbacks have no fixed thread affinity. Normal network responses run on the
 /// network worker; submission failures and cancellation can invoke callbacks on

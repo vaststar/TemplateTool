@@ -1,7 +1,9 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include <ucf/services/NetworkService/NetworkServiceTypesExport.h>
@@ -26,7 +28,12 @@ public:
     const NetworkHttpHeaders& getRequestHeaders() const;
     int getTimeout() const;
 
+    /// Local destination path encoded as UTF-8.
     const std::string& getDownloadFilePath() const;
+
+    /// Limit the final file size, including any existing bytes used for resuming.
+    void setMaxFileSize(std::uintmax_t maxBytes);
+    std::optional<std::uintmax_t> getMaxFileSize() const;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

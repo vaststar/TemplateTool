@@ -98,7 +98,7 @@ void ContactAdapter::testFunc()
             SERVICE_LOG_DEBUG("start post Rest");
             networkManager->sendHttpRestRequest(postRestRequest, postRestCallback);
         //test get rest api(auto redirect)
-            ucf::service::network::http::HttpRestRequest getRestRequest{ucf::service::network::http::HTTPMethod::GET, "http://www.microsoft.com/", {{"Transfer-Encoding",""}},{}, 30};
+            ucf::service::network::http::HttpRestRequest getRestRequest{ucf::service::network::http::HTTPMethod::GET, "https://www.microsoft.com/", {{"Transfer-Encoding",""}},{}, 30};
             auto getRestCallback = [](const ucf::service::network::http::HttpRestResponse& httpResponse){
                     SERVICE_LOG_DEBUG("getRestCallback body," << httpResponse.getResponseBody());
             };
@@ -106,7 +106,7 @@ void ContactAdapter::testFunc()
             networkManager->sendHttpRestRequest(getRestRequest, getRestCallback);
 
         // //test raw get request
-        // ucf::service::network::http::HttpRawRequest rawGetRequest(ucf::service::network::http::HTTPMethod::GET, "http://www.microsoft.com/", {{"Transfer-Encoding",""}},{}, 30);
+        // ucf::service::network::http::HttpRawRequest rawGetRequest(ucf::service::network::http::HTTPMethod::GET, "https://www.microsoft.com/", {{"Transfer-Encoding",""}},{}, 30);
         // auto rawGetCallback = [](const ucf::service::network::http::HttpRawResponse& httpResponse) {
         //     auto body = httpResponse.getResponseBody();
         //     std::string pri = std::string{ body.begin(), body.end() };

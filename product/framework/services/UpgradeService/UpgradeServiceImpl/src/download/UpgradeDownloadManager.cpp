@@ -17,6 +17,7 @@
 #include <ucf/utilities/UUIDUtils/UUIDUtils.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <exception>
 #include <utility>
 #include <vector>
@@ -567,6 +568,10 @@ void UpgradeDownloadManager::attemptDownload(const std::shared_ptr<DownloadSessi
 
     auto request = std::make_unique<network::http::HttpDownloadToFileRequest>(
         session->packageInfo.downloadUrl, headers, 300, ucf::utilities::FilePathUtils::utf8FromPath(partialPath));
+    if (session->packageInfo.sizeBytes > 0)
+    {
+        request->setMaxFileSize(static_cast<std::uintmax_t>(session->packageInfo.sizeBytes));
+    }
     const std::string requestId = request->getRequestId();
 
     // Publish the ID before sending. If shutdown cancels it before the HTTP

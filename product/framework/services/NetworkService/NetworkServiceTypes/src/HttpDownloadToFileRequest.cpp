@@ -28,6 +28,9 @@ public:
 
     void setDownloadFilePath(const std::string& downloadFilePath){ mDownloadFilePath = downloadFilePath;}
     const std::string& getDownloadFilePath() const{ return mDownloadFilePath;}
+
+    void setMaxFileSize(std::uintmax_t maxBytes){ mMaxFileSize = maxBytes;}
+    std::optional<std::uintmax_t> getMaxFileSize() const{ return mMaxFileSize;}
 private:
     std::string mRequestId;
     std::string mUri;
@@ -35,6 +38,7 @@ private:
     int mTimeoutSecs;
     std::string mTrackingId;
     std::string mDownloadFilePath;
+    std::optional<std::uintmax_t> mMaxFileSize;
 };
 
 HttpDownloadToFileRequest::DataPrivate::DataPrivate()
@@ -102,6 +106,16 @@ int HttpDownloadToFileRequest::getTimeout() const
 const std::string& HttpDownloadToFileRequest::getDownloadFilePath() const
 {
     return mDataPrivate->getDownloadFilePath();
+}
+
+void HttpDownloadToFileRequest::setMaxFileSize(std::uintmax_t maxBytes)
+{
+    mDataPrivate->setMaxFileSize(maxBytes);
+}
+
+std::optional<std::uintmax_t> HttpDownloadToFileRequest::getMaxFileSize() const
+{
+    return mDataPrivate->getMaxFileSize();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

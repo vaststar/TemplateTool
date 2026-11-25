@@ -97,7 +97,11 @@ std::shared_ptr<LibCurlEasyHandle> LibCurlClient::DataPrivate::buildEasyHandle(c
     easyHandle->setTrackingId(httpRequest.getTrackingId());
     easyHandle->setRequestId(httpRequest.getRequestId());
     easyHandle->setTimeout(httpRequest.getTimeout());
-    easyHandle->setCommonOptions();
+    if (auto code = easyHandle->setCommonOptions(); code != CURLE_OK)
+    {
+        easyHandle->finishHandle(code);
+        return {};
+    }
     // easyHandle->enableCURLDebugPrint();
 
     switch (httpRequest.getPayloadType())
@@ -159,7 +163,10 @@ void LibCurlClient::makeGenericRequest(const ucf::infrastructure::network::http:
     mDataPrivate->ensureStarted();
 
     auto easyHandle = mDataPrivate->buildEasyHandle(request, headerCallback, bodyCallback, completionCallback);
-    mDataPrivate->insertEasyHandle(easyHandle);
+    if (easyHandle)
+    {
+        mDataPrivate->insertEasyHandle(easyHandle);
+    }
 
     LIBCURL_LOG_DEBUG(
         "Network request submission finished, requestId: "

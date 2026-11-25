@@ -22,7 +22,7 @@ On the GitHub repository page, go to **Actions** → **Build libcurl All Platfor
 
 | Platform | Architectures | Library Type | SSL Backend |
 |----------|---------------|--------------|-------------|
-| Windows | x64, x86, arm64 | Shared (.dll) | Schannel (System SSL) |
+| Windows | x64, x86, arm64 | Shared (.dll) | OpenSSL |
 | macOS | Intel (x86_64), Apple Silicon (arm64) | Shared (.dylib) | OpenSSL |
 | iOS | arm64 (device), arm64+x86_64 (simulator) | Static (.a) / XCFramework | OpenSSL |
 | Android | arm64-v8a, armeabi-v7a, x86_64, x86 | Shared (.so) | OpenSSL |
@@ -97,7 +97,7 @@ Main CMake options used during compilation:
 
 ```cmake
 -DBUILD_SHARED_LIBS=ON          # Shared libraries (except iOS)
--DCURL_USE_OPENSSL=ON           # Use OpenSSL (Windows uses Schannel)
+-DCURL_USE_OPENSSL=ON           # Use OpenSSL
 -DCURL_ZLIB=OFF                 # Disable zlib
 -DBUILD_CURL_EXE=OFF            # Don't build curl CLI tool
 -DBUILD_TESTING=OFF             # Don't build tests
@@ -106,19 +106,24 @@ Main CMake options used during compilation:
 
 ## Dependencies
 
-- **Windows**: No external dependencies (uses system Schannel)
-- **Other platforms**: Requires OpenSSL (located in `../openssl/` directory)
+The bundled libraries use OpenSSL from `../openssl/`.
 
 ## Runtime Deployment
 
 ### Windows
-Copy `libcurl.dll` to the same directory as your executable, or add to `PATH`.
+Deploy `libcurl.dll` and the matching OpenSSL DLLs together. The app enables
+libcurl's native Windows CA store support for certificate verification.
 
 ### macOS
-The library's `LC_ID_DYLIB` is set to `@rpath/libcurl.dylib`. Ensure your application's RPATH includes the library directory.
+The library's `LC_ID_DYLIB` is set to `@rpath/libcurl.dylib`. Ensure your application's RPATH includes the library directory. The current macOS dylibs use the OS-provided PEM bundle at `/etc/ssl/cert.pem`. libcurl verifies certificates against roots in that bundle.
 
 ### Linux / Android
 The library's RPATH is set to `$ORIGIN`. Place the `.so` file in the same directory as your executable.
+
+Desktop Linux uses the host CA bundle. The bundled Linux libcurl defaults to
+`/etc/ssl/certs/ca-certificates.crt`. The app also checks the Fedora/RHEL bundle
+at `/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem` when the default file is absent. DEB and RPM
+packages depend on `ca-certificates`. Install that package before using the TGZ.
 
 ### iOS
 Use the XCFramework. Drag it into your Xcode project and it will automatically handle device/simulator architectures.

@@ -5,6 +5,28 @@
 
 namespace ucf::utilities {
 
+namespace {
+
+std::filesystem::path getWideEnv(const wchar_t* name)
+{
+    const DWORD size = GetEnvironmentVariableW(name, nullptr, 0);
+    if (size == 0)
+    {
+        return {};
+    }
+
+    std::wstring value(size, L'\0');
+    const DWORD length = GetEnvironmentVariableW(name, value.data(), size);
+    if (length == 0 || length >= size)
+    {
+        return {};
+    }
+    value.resize(length);
+    return std::filesystem::path{value};
+}
+
+} // namespace
+
 SystemColorScheme SystemUtils_Win::getSystemColorScheme()
 {
     DWORD value = 1; // default: light
@@ -41,15 +63,11 @@ std::filesystem::path SystemUtils_Win::getBaseStorageDir()
 
 std::filesystem::path SystemUtils_Win::getBaseCacheDir()
 {
-    if (auto base = getEnv("LOCALAPPDATA"); !base.empty())
+    if (auto base = getWideEnv(L"LOCALAPPDATA"); !base.empty())
     {
         return base;
     }
-    if (auto profile = getEnv("USERPROFILE"); !profile.empty())
-    {
-        return profile;
-    }
-    return {};
+    return getWideEnv(L"USERPROFILE");
 }
 
 }

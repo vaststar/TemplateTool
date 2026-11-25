@@ -41,19 +41,22 @@ std::optional<std::string> getUrlPart(CURLU* url, CURLUPart part, unsigned int f
 }
 
 struct Origin {
-    std::string scheme;
     std::string host;
     unsigned int port;
     std::string zoneId;
 };
 
-std::optional<Origin> getOrigin(CURLU* url)
+std::optional<Origin> getHttpsOrigin(CURLU* url)
 {
-    auto scheme = getUrlPart(url, CURLUPART_SCHEME);
+    const auto scheme = getUrlPart(url, CURLUPART_SCHEME);
+    if (!scheme || !equalsAsciiIgnoringCase(*scheme, "https"))
+    {
+        return std::nullopt;
+    }
+
     auto host = getUrlPart(url, CURLUPART_HOST, CURLU_PUNYCODE);
     auto port = getUrlPart(url, CURLUPART_PORT, CURLU_DEFAULT_PORT);
-    if (!scheme || !host || !port
-        || (!equalsAsciiIgnoringCase(*scheme, "http") && !equalsAsciiIgnoringCase(*scheme, "https")))
+    if (!host || !port)
     {
         return std::nullopt;
     }
@@ -72,13 +75,12 @@ std::optional<Origin> getOrigin(CURLU* url)
     {
         return std::nullopt;
     }
-    return Origin{*scheme, *host, portNumber, ownedZone ? ownedZone.get() : ""};
+    return Origin{*host, portNumber, ownedZone ? ownedZone.get() : ""};
 }
 
 bool sameOrigin(const Origin& first, const Origin& second) noexcept
 {
-    return equalsAsciiIgnoringCase(first.scheme, second.scheme)
-        && equalsAsciiIgnoringCase(first.host, second.host)
+    return equalsAsciiIgnoringCase(first.host, second.host)
         && first.port == second.port
         && first.zoneId == second.zoneId;
 }
@@ -135,12 +137,12 @@ bool tryApplyHttpRedirect(http::NetworkHttpRequest& request, int statusCode,
     {
         return false;
     }
-    const auto sourceOrigin = getOrigin(url.get());
+    const auto sourceOrigin = getHttpsOrigin(url.get());
     if (!sourceOrigin || curl_url_set(url.get(), CURLUPART_URL, location.c_str(), 0) != CURLUE_OK)
     {
         return false;
     }
-    const auto targetOrigin = getOrigin(url.get());
+    const auto targetOrigin = getHttpsOrigin(url.get());
     if (!targetOrigin)
     {
         return false;

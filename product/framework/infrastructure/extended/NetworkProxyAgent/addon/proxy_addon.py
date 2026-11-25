@@ -1018,7 +1018,7 @@ def main():
     # Use mitmproxy's Python API directly (works with PyInstaller)
     # DumpMaster requires a running asyncio event loop
     async def run_proxy():
-        opts = Options(listen_port=args.proxy_port)
+        opts = Options(listen_host="127.0.0.1", listen_port=args.proxy_port)
         master = dump.DumpMaster(opts)
         master.addons.add(addon)
         try:

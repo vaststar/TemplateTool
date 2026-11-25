@@ -201,6 +201,10 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
+      - name: Verify network TLS policy
+        shell: bash
+        run: ctest --preset "${{ matrix.preset }}" --output-on-failure --no-tests=error -R '^Network TLS'
+
       # ── Run Tests ─────────────────────────────────────────────────────────
       - name: Run Tests
         shell: bash

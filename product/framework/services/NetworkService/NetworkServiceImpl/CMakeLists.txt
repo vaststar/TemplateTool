@@ -33,6 +33,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     CoreFrameworkApi
     UUIDUtils
     OSUtils
+    FilePathUtils
     LibCurlClient
     LoggerUtils
 )

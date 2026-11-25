@@ -1,17 +1,18 @@
 #include <string>
+#include <string_view>
 #include <filesystem>
 #include <fstream>
 #include <sstream>
 #include <exception>
 #include <curl/curl.h>
-#include <ucf/utilities/StringUtils/StringUtils.h>
 
 #include "LibCurlEasyHandle.h"
 #include "LibCurlClientLogger.h"
 #include "LibCurlPayloadData.h"
+#include "TlsTrustOptions.h"
 
 namespace ucf::infrastructure::network::libcurl{
-inline constexpr auto MAX_REQUEST_REDIRECTS{ 5 };
+inline constexpr long MAX_REQUEST_REDIRECTS{ 5 };
 
 namespace {
 
@@ -54,24 +55,50 @@ void logExceptionSafely(const char* phase, const std::exception_ptr& error) noex
 
 static size_t header_callback(char *data, size_t size, size_t nmemb, void *userp) noexcept
 {
+    const auto bytes = size * nmemb;
     const auto easyHandle = static_cast<LibCurlEasyHandle*>(userp);
     try
     {
-        if(data == nullptr || easyHandle == nullptr)
+        if (data == nullptr || easyHandle == nullptr)
         {
-            return size * nmemb;
+            return bytes;
         }
-        const std::string_view headerString(data, size * nmemb);
-        if (const auto seperator = headerString.find(": "); seperator != std::string::npos)
+        const std::string_view headerString(data, bytes);
+        if (headerString.starts_with("HTTP/"))
         {
-            const auto key = std::string(headerString.substr(0, seperator));
-            const auto value = ucf::utilities::StringUtils::trim(std::string(headerString.substr(seperator + 2)));
-            easyHandle->addResponseHeader(key, value);
+            easyHandle->clearResponseHeaders();
+            return bytes;
         }
-        if (headerString == "\r\n") {
+        if (headerString == "\r\n")
+        {
             easyHandle->headersCompleted();
+            return bytes;
         }
-        return size * nmemb;
+
+        const auto separator = headerString.find(':');
+        if (separator == std::string_view::npos)
+        {
+            return bytes;
+        }
+        constexpr std::string_view fieldNameCharacters =
+            "!#$%&'*+-.^_`|~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        const auto name = headerString.substr(0, separator);
+        if (name.empty() || name.find_first_not_of(fieldNameCharacters) != std::string_view::npos)
+        {
+            return bytes;
+        }
+
+        auto value = headerString.substr(separator + 1);
+        if (value.ends_with('\n'))
+        {
+            value.remove_suffix(value.ends_with("\r\n") ? 2 : 1);
+        }
+        const auto valueStart = value.find_first_not_of(" \t");
+        const auto trimmedValue = valueStart == std::string_view::npos
+            ? std::string_view{}
+            : value.substr(valueStart, value.find_last_not_of(" \t") - valueStart + 1);
+        easyHandle->addResponseHeader(std::string(name), std::string(trimmedValue));
+        return bytes;
     }
     catch (...)
     {
@@ -255,7 +282,7 @@ public:
     int setHeaders(const ucf::infrastructure::network::http::NetworkHttpHeaders& headers);
 
     template<typename ...Args>
-    int setOption(CURLoption option, const Args& ...args)
+    CURLcode setOption(CURLoption option, const Args& ...args)
     {
         auto const code = curl_easy_setopt(mHandle, option, args...);
         if (code != CURLE_OK)
@@ -295,6 +322,7 @@ public:
         }
         return code;
     }
+    void clearResponseHeaders() noexcept { mResponseHeader.clear(); }
     void addResponseHeader(const std::string& key, const std::string& val);
     ucf::infrastructure::network::http::NetworkHttpHeaders getResponseHeader() const;
 
@@ -553,7 +581,7 @@ void LibCurlEasyHandle::setInFileSizeLarge(size_t file_size)
     mDataPrivate->setOption(CURLOPT_INFILESIZE_LARGE, file_size);
 }
 
-void LibCurlEasyHandle::setCommonOptions()
+CURLcode LibCurlEasyHandle::setCommonOptions()
 {
     mDataPrivate->setOption(CURLOPT_READFUNCTION, request_body_callback);
     mDataPrivate->setOption(CURLOPT_READDATA, this);
@@ -567,9 +595,6 @@ void LibCurlEasyHandle::setCommonOptions()
 
     mDataPrivate->setOption(CURLOPT_MAXREDIRS, MAX_REQUEST_REDIRECTS);
     mDataPrivate->setOption(CURLOPT_TRANSFER_ENCODING, 1L);
-    mDataPrivate->setOption(CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
-    mDataPrivate->setOption(CURLOPT_SSL_VERIFYPEER, 0L);
-    mDataPrivate->setOption(CURLOPT_SSL_VERIFYHOST, 0L);
 
     mDataPrivate->setOption(CURLOPT_NOSIGNAL, 1L);
 
@@ -579,12 +604,36 @@ void LibCurlEasyHandle::setCommonOptions()
     // Low speed detection: timeout if speed < 1KB/s for 30 seconds
     mDataPrivate->setOption(CURLOPT_LOW_SPEED_LIMIT, 1000L);
     mDataPrivate->setOption(CURLOPT_LOW_SPEED_TIME, 30L);
+
+    CURLcode result = CURLE_OK;
+    const auto setRequiredOption = [this, &result](CURLoption option, auto value) {
+        if (result == CURLE_OK)
+        {
+            result = mDataPrivate->setOption(option, value);
+        }
+    };
+
+    setRequiredOption(CURLOPT_SSLVERSION, static_cast<long>(CURL_SSLVERSION_TLSv1_2));
+    setRequiredOption(CURLOPT_SSL_VERIFYPEER, 1L);
+    setRequiredOption(CURLOPT_SSL_VERIFYHOST, 2L);
+    setRequiredOption(CURLOPT_PROTOCOLS_STR, "https");
+
+    if (result != CURLE_OK)
+    {
+        return result;
+    }
+    return configureTlsTrust(mDataPrivate->getHandle());
 }
 
 void LibCurlEasyHandle::enableCURLDebugPrint()
 {
     mDataPrivate->setOption(CURLOPT_VERBOSE, 1L);
     mDataPrivate->setOption(CURLOPT_DEBUGFUNCTION, debug_callback);
+}
+
+void LibCurlEasyHandle::clearResponseHeaders() noexcept
+{
+    mDataPrivate->clearResponseHeaders();
 }
 
 void LibCurlEasyHandle::addResponseHeader(const std::string& key, const std::string& val)

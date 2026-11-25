@@ -9,7 +9,8 @@ class NetworkHttpRequest;
 
 namespace ucf::infrastructure::network::libcurl {
 
-// Prepare the next HTTP(S) request for a 301/302/303/307/308 response.
+// Prepare the next HTTPS request for a 301/302/303/307/308 response.
+// Both the current URL and resolved Location must use HTTPS.
 // A missing or invalid Location returns false without modifying the request.
 // 301/302 change POST to GET; 303 keeps HEAD or uses GET and drops the payload.
 // Cross-origin redirects remove Authorization, Cookie, Proxy-Authorization,

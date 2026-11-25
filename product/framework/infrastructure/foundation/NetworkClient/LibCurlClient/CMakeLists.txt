@@ -22,6 +22,7 @@ set(MODULE_SOURCE_PRIVATE
     src/LibCurlEasyHandle.cpp
     src/LibCurlPayloadData.h
     src/LibCurlPayloadData.cpp
+    src/TlsTrustOptions.h
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     NetworkModelTypes
@@ -60,3 +61,7 @@ TARGET_PUBLIC_DEFINITIONS ${MODULE_PUBLIC_DEFINITIONS}
 TARGET_PRIVATE_DEFINITIONS ${MODULE_PRIVATE_DEFINITIONS}
 IDE_FOLDER ${MODULE_IDE_FOLDER}
 )
+
+if(BUILD_TESTING)
+    add_subdirectory(test)
+endif()
