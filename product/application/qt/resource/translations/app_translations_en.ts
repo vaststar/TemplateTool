@@ -305,6 +305,384 @@ Close this terminal to cancel.</source>
     </message>
 </context>
 <context>
+    <name>ChatConversationList</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="25"/>
+        <source>Chat</source>
+        <translation>Chat</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="33"/>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="201"/>
+        <source>New group</source>
+        <translation>New group</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="42"/>
+        <source>Accept chat invitation</source>
+        <translation>Accept chat invitation</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="88"/>
+        <source>Group options</source>
+        <translation>Group options</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="166"/>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="201"/>
+        <source>Rename group</source>
+        <translation>Rename group</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="167"/>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="257"/>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="287"/>
+        <source>Delete group</source>
+        <translation>Delete group</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="224"/>
+        <source>Group name</source>
+        <translation>Group name</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="241"/>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="282"/>
+        <source>Cancel</source>
+        <translation>Cancel</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="245"/>
+        <source>Save</source>
+        <translation>Save</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="245"/>
+        <source>Create</source>
+        <translation>Create</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="274"/>
+        <source>Conversations in “%1” will move to Ungrouped.</source>
+        <translation>Conversations in “%1” will move to Ungrouped.</translation>
+    </message>
+</context>
+<context>
+    <name>ChatInviteDialog</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="32"/>
+        <source>Paste a reply</source>
+        <translation>Paste a reply</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="32"/>
+        <source>Accept a chat invitation</source>
+        <translation>Accept a chat invitation</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="54"/>
+        <source>Paste the reply you received from your contact.</source>
+        <translation>Paste the reply you received from your contact.</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="55"/>
+        <source>Paste an invitation you were expecting. You can verify the other device before sending messages.</source>
+        <translation>Paste an invitation you were expecting. You can verify the other device before sending messages.</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="64"/>
+        <source>Reply text</source>
+        <translation>Reply text</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="64"/>
+        <source>Invitation text</source>
+        <translation>Invitation text</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="75"/>
+        <source>Link this invitation to %1</source>
+        <translation>Link this invitation to %1</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="93"/>
+        <source>Check the text and try again.</source>
+        <translation>Check the text and try again.</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="103"/>
+        <source>Paste</source>
+        <translation>Paste</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="116"/>
+        <source>Cancel</source>
+        <translation>Cancel</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="120"/>
+        <source>Connect</source>
+        <translation>Connect</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="120"/>
+        <source>Accept invitation</source>
+        <translation>Accept invitation</translation>
+    </message>
+</context>
+<context>
+    <name>ChatPageController</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/src/ChatPageController.cpp" line="24"/>
+        <source>The message to reply to is unavailable in this conversation.</source>
+        <translation>The message to reply to is unavailable in this conversation.</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/src/ChatPageController.cpp" line="69"/>
+        <source>Yesterday</source>
+        <translation>Yesterday</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/src/ChatPageController.cpp" line="104"/>
+        <source>Chat is unavailable.</source>
+        <translation>Chat is unavailable.</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/src/ChatPageController.cpp" line="332"/>
+        <source>Ungrouped</source>
+        <translation>Ungrouped</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/src/ChatPageController.cpp" line="348"/>
+        <source>Today</source>
+        <translation>Today</translation>
+    </message>
+</context>
+<context>
+    <name>ChatThread</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="43"/>
+        <source>Jump to original message</source>
+        <translation>Jump to original message</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="70"/>
+        <source>Original message unavailable</source>
+        <translation>Original message unavailable</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="82"/>
+        <source>Preparing invitation…</source>
+        <translation>Preparing invitation…</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="83"/>
+        <source>Waiting for reply</source>
+        <translation>Waiting for reply</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="84"/>
+        <source>Connecting…</source>
+        <translation>Connecting…</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="85"/>
+        <source>Verify device</source>
+        <translation>Verify device</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="86"/>
+        <source>Connected</source>
+        <translation>Connected</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="87"/>
+        <source>Connection failed</source>
+        <translation>Connection failed</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="88"/>
+        <source>Disconnected</source>
+        <translation>Disconnected</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="144"/>
+        <source>Loading chat…</source>
+        <translation>Loading chat…</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="145"/>
+        <source>Select a conversation.</source>
+        <translation>Select a conversation.</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="146"/>
+        <source>Open a person in Contacts to start a chat, or accept an invitation.</source>
+        <translation>Open a person in Contacts to start a chat, or accept an invitation.</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="199"/>
+        <source>Move to group</source>
+        <translation>Move to group</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="207"/>
+        <source>Disconnect</source>
+        <translation>Disconnect</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="239"/>
+        <source>Preparing the information your contact needs to connect.</source>
+        <translation>Preparing the information your contact needs to connect.</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="241"/>
+        <source>Send the invitation through a channel you already use. When your contact sends back a reply, paste it here.</source>
+        <translation>Send the invitation through a channel you already use. When your contact sends back a reply, paste it here.</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="244"/>
+        <source>Send this reply to the person who sent the invitation.</source>
+        <translation>Send this reply to the person who sent the invitation.</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="245"/>
+        <source>Waiting for the other device to connect.</source>
+        <translation>Waiting for the other device to connect.</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="247"/>
+        <source>Compare these fingerprints with your contact through a trusted channel. Your fingerprint should match the one they see for you, and theirs should match the one below.</source>
+        <translation>Compare these fingerprints with your contact through a trusted channel. Your fingerprint should match the one they see for you, and theirs should match the one below.</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="250"/>
+        <source>Create an invitation to connect when both devices are online.</source>
+        <translation>Create an invitation to connect when both devices are online.</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="271"/>
+        <source>Your fingerprint</source>
+        <translation>Your fingerprint</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="282"/>
+        <source>Their fingerprint</source>
+        <translation>Their fingerprint</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="301"/>
+        <source>Create invitation</source>
+        <translation>Create invitation</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="307"/>
+        <source>Copy invitation</source>
+        <translation>Copy invitation</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="310"/>
+        <source>Invitation copied</source>
+        <translation>Invitation copied</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="318"/>
+        <source>Paste reply</source>
+        <translation>Paste reply</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="323"/>
+        <source>Copy reply</source>
+        <translation>Copy reply</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="326"/>
+        <source>Reply copied</source>
+        <translation>Reply copied</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="334"/>
+        <source>Fingerprints match</source>
+        <translation>Fingerprints match</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="343"/>
+        <source>Cancel</source>
+        <translation>Cancel</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="414"/>
+        <source>You</source>
+        <translation>You</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="444"/>
+        <source>%1 · %2</source>
+        <translation>%1 · %2</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="445"/>
+        <source>Delivered</source>
+        <translation>Delivered</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="445"/>
+        <source>Pending</source>
+        <translation>Pending</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="459"/>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="526"/>
+        <source>Reply</source>
+        <translation>Reply</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="477"/>
+        <source>Replying to %1</source>
+        <translation>Replying to %1</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="477"/>
+        <source>yourself</source>
+        <translation>yourself</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="478"/>
+        <source>Replying to a message</source>
+        <translation>Replying to a message</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="485"/>
+        <source>Cancel reply</source>
+        <translation>Cancel reply</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="501"/>
+        <source>Message</source>
+        <translation>Message</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="502"/>
+        <source>Write a message…</source>
+        <translation>Write a message…</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="503"/>
+        <source>Write a message to send when connected…</source>
+        <translation>Write a message to send when connected…</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="504"/>
+        <source>Verify the device to send a message</source>
+        <translation>Verify the device to send a message</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="509"/>
+        <source>Send</source>
+        <translation>Send</translation>
+    </message>
+</context>
+<context>
     <name>ContactDeleteDialog</name>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactDeleteDialog.qml" line="21"/>
@@ -463,42 +841,42 @@ Close this terminal to cancel.</source>
 <context>
     <name>ContactsPageController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="227"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="237"/>
         <source>Add contact</source>
         <translation>Add contact</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="232"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="242"/>
         <source>Add group</source>
         <translation>Add group</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="243"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="253"/>
         <source>Rename group</source>
         <translation>Rename group</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="244"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="254"/>
         <source>Edit contact</source>
         <translation>Edit contact</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="249"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="259"/>
         <source>Delete</source>
         <translation>Delete</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="410"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="420"/>
         <source>Save failed</source>
         <translation>Save failed</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="411"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="421"/>
         <source>Changes were applied to the current page, but could not be written to the local database.</source>
         <translation>Changes were applied to the current page, but could not be written to the local database.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="412"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="422"/>
         <source>These changes may be lost after the app closes. Please try again later.</source>
         <translation>These changes may be lost after the app closes. Please try again later.</translation>
     </message>
@@ -604,6 +982,14 @@ Close this terminal to cancel.</source>
         <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/DepartmentDetailBody.qml" line="30"/>
         <source>Headcount</source>
         <translation>Headcount</translation>
+    </message>
+</context>
+<context>
+    <name>DetailHeader</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/DetailHeader.qml" line="69"/>
+        <source>Send message</source>
+        <translation>Send message</translation>
     </message>
 </context>
 <context>
@@ -2093,12 +2479,12 @@ Double-click a rule to view details.</translation>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="77"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="78"/>
         <source>Show Main Window</source>
         <translation>Show Main Window</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="76"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="77"/>
         <source>Quit</source>
         <translation>Quit</translation>
     </message>
@@ -2108,7 +2494,7 @@ Double-click a rule to view details.</translation>
         <translation>my test window title bar</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="70"/>
+        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="76"/>
         <source>my test window aa</source>
         <translation>my test window aa</translation>
     </message>
@@ -2178,211 +2564,216 @@ Double-click a rule to view details.</translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="36"/>
+        <source>Chat</source>
+        <translation>Chat</translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="37"/>
         <source>Contacts</source>
         <translation>Contacts</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="37"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="38"/>
         <source>Tasks</source>
         <translation>Tasks</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="38"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="39"/>
         <source>Credentials</source>
         <translation>Credentials</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="39"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="40"/>
         <source>Toolbox</source>
         <translation>Toolbox</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="40"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="41"/>
         <source>Mini Apps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="41"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="42"/>
         <source>Settings</source>
         <translation>Settings</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="42"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="43"/>
         <source>Help</source>
         <translation>Help</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="43"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="44"/>
         <source>Check for Updates</source>
         <translation>Check for Updates</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="44"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="45"/>
         <source>About</source>
         <translation>About</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="45"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="46"/>
         <source>Text Processing</source>
         <translation>Text Processing</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="46"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="47"/>
         <source>Date &amp; Time</source>
         <translation>Date &amp; Time</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="47"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="48"/>
         <source>Generators</source>
         <translation>Generators</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="48"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="49"/>
         <source>Base64 Encode/Decode</source>
         <translation>Base64 Encode/Decode</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="49"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="50"/>
         <source>JSON Formatter</source>
         <translation>JSON Formatter</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="50"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="51"/>
         <source>Timestamp Converter</source>
         <translation>Timestamp Converter</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="51"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="52"/>
         <source>UUID Generator</source>
         <translation>UUID Generator</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="52"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="53"/>
         <source>Network</source>
         <translation>Network</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="53"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="54"/>
         <source>Network Proxy</source>
         <translation>Network Proxy</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="54"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="55"/>
         <source>Media</source>
         <translation>Media</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="55"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="56"/>
         <source>Screen Capture</source>
         <translation>Screen Capture</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="56"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="57"/>
         <source>Screenshot</source>
         <translation>Screenshot</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="57"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="58"/>
         <source>Screen Recording</source>
         <translation>Screen Recording</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="58"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="59"/>
         <source>JSON is valid</source>
         <translation>JSON is valid</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="59"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="60"/>
         <source>Invalid timestamp</source>
         <translation>Invalid timestamp</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="60"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="61"/>
         <source>DateTime format parse failed</source>
         <translation>DateTime format parse failed</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="61"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="62"/>
         <source>Invalid datetime</source>
         <translation>Invalid datetime</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="62"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="63"/>
         <source>General</source>
         <translation>General</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="63"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="64"/>
         <source>Appearance</source>
         <translation>Appearance</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="64"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="65"/>
         <source>Language</source>
         <translation>Language</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="65"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="66"/>
         <source>Install failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="66"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="67"/>
         <source>The selected folder no longer exists.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="67"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="68"/>
         <source>The folder does not contain a valid mini app. It must include a manifest.json with matching id, name and version.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="68"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="69"/>
         <source>This mini app is already installed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="69"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="70"/>
         <source>Storage is not available right now. Please try again later.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="70"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="71"/>
         <source>Could not copy the mini app files. Check available disk space and permissions.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="71"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="72"/>
         <source>Could not install the mini app.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="72"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="73"/>
         <source>Uninstall failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="73"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="74"/>
         <source>This mini app is no longer installed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="74"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="75"/>
         <source>Could not remove the mini app files. Check permissions and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="75"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="76"/>
         <source>Could not uninstall the mini app.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="89"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="90"/>
         <source>{{0}} of {{1}} completed</source>
         <translation>{{0}} of {{1}} completed</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="90"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="91"/>
         <source>test param {{0}}, only 1 param</source>
         <translation>test param {{0}}, only 1 param</translation>
     </message>

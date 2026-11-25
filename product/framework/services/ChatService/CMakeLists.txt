@@ -1,0 +1,3 @@
+add_subdirectory(ChatServiceTypes)
+add_subdirectory(ChatServiceApi)
+add_subdirectory(ChatServiceImpl)

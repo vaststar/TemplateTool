@@ -24,6 +24,7 @@ enum class PageId : std::uint8_t
     MiniApps,       // Mini apps
     Settings,       // Settings
     Help,           // Help
+    Chat,           // Chat workspace
 };
 
 /**

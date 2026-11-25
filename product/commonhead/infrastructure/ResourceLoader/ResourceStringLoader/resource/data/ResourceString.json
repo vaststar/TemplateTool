@@ -31,6 +31,7 @@
     }
     ,
     { "token": "NavHome", "value": "Home", "conditions": [] },
+    { "token": "NavChat", "value": "Chat", "conditions": [] },
     { "token": "NavContacts", "value": "Contacts", "conditions": [] },
     { "token": "NavTasks", "value": "Tasks", "conditions": [] },
     { "token": "NavCredentials", "value": "Credentials", "conditions": [] },

@@ -27,6 +27,7 @@ set(MODULE_HEADER_FILES
     include/UIViewModelSignalBridge/metatypes/UpgradeMetaTypes.h
     include/UIViewModelSignalBridge/emitters/AppUIViewModelEmitter.h
     include/UIViewModelSignalBridge/emitters/CameraDirectoryViewModelEmitter.h
+    include/UIViewModelSignalBridge/emitters/ChatViewModelEmitter.h
     include/UIViewModelSignalBridge/emitters/ContactListViewModelEmitter.h
     include/UIViewModelSignalBridge/emitters/InvocationViewModelEmitter.h
     include/UIViewModelSignalBridge/emitters/MainWindowViewModelEmitter.h
@@ -52,6 +53,7 @@ set(MODULE_SOURCE_PRIVATE
 set(MODULE_DEPENDENCIES_PUBLIC
     AppUIViewModelApi
     CameraDirectoryViewModelApi
+    ChatViewModelApi
     ContactListViewModelApi
     InvocationViewModelApi
     MainWindowViewModelApi

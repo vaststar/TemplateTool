@@ -97,6 +97,18 @@ bool SideBarViewModel::initDefaultNavItems()
             {}
         },
         {
+            model::PageId::Chat,
+            "chat",
+            resourceLoader->getLocalizedString(commonHead::model::LocalizedString::NavChat),
+            commonHead::model::AssetImageToken::Nav_Chat,
+            commonHead::model::AssetImageToken::Nav_Chat_Selected,
+            0,
+            model::NavItemState::Normal,
+            model::NavItemPosition::Top,
+            1,
+            {}
+        },
+        {
             model::PageId::Contacts,
             "contacts",
             resourceLoader->getLocalizedString(commonHead::model::LocalizedString::NavContacts),
@@ -105,7 +117,7 @@ bool SideBarViewModel::initDefaultNavItems()
             0,
             model::NavItemState::Normal,
             model::NavItemPosition::Top,
-            1,
+            2,
             {}
         },
         {
@@ -117,7 +129,7 @@ bool SideBarViewModel::initDefaultNavItems()
             0,
             model::NavItemState::Normal,
             model::NavItemPosition::Top,
-            2,
+            3,
             {}
         },
         {
@@ -129,7 +141,7 @@ bool SideBarViewModel::initDefaultNavItems()
             0,
             model::NavItemState::Normal,
             model::NavItemPosition::Top,
-            3,
+            4,
             {}
         },
         {
@@ -141,7 +153,7 @@ bool SideBarViewModel::initDefaultNavItems()
             0,
             model::NavItemState::Normal,
             model::NavItemPosition::Top,
-            4,
+            5,
             {}
         },
         {
@@ -153,7 +165,7 @@ bool SideBarViewModel::initDefaultNavItems()
             0,
             model::NavItemState::Normal,
             model::NavItemPosition::Top,
-            5,
+            6,
             {}
         },
         {

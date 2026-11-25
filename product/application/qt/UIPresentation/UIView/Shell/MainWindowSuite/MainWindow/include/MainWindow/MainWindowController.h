@@ -4,6 +4,7 @@
 
 #include <QString>
 #include <QObject>
+#include <QPointer>
 #include <QRect>
 #include <QWindow>
 #include <QtQml>
@@ -12,6 +13,8 @@
 #include "MainWindow/MainWindowContentPageRegistry.h"
 
 class AppUpgradeController;
+class ChatPageController;
+class MainWindowSideBarController;
 
 namespace commonHead::viewModels {
     class IMainWindowViewModel;
@@ -66,9 +69,15 @@ private:
     void createUpgradeController();
     void showAboutDialog();
     void quitApplication();
+    void openChatForContact(const QString& contactId, const QString& displayName);
+    void deliverPendingChatContact();
 private:
     std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> mMainViewModel;
     std::shared_ptr<UIViewModelSignalBridge::MainWindowViewModelEmitter> mMainViewModelEmitter;
     AppUpgradeController* m_upgradeController = nullptr;
     MainWindowContentPageRegistry* m_pageRegistry = nullptr;
+    QPointer<MainWindowSideBarController> m_sideBarController;
+    QPointer<ChatPageController> m_chatPageController;
+    QString m_pendingChatContactId;
+    QString m_pendingChatDisplayName;
 };

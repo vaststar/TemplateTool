@@ -55,6 +55,7 @@ public slots:
     void buttonClicked();
     void setSearchText(const QString& text);
     Q_INVOKABLE void selectContact(const QString& contactId);
+    Q_INVOKABLE void requestChatForCurrentContact();
     Q_INVOKABLE QVariantMap getContactInfo(const QString& contactId) const;
     Q_INVOKABLE bool canDropOn(const QString& srcId, const QString& targetParentId) const;
     Q_INVOKABLE void moveContact(const QString& srcId, const QString& targetParentId);
@@ -98,6 +99,7 @@ signals:
     void currentContactInfoChanged();
     void loadStateChanged();
     void searchTextChanged();
+    void chatRequested(const QString& contactId, const QString& displayName);
     void nodeMoved(QString newParentId);
     // Fired once a freshly-added contact has materialised in the tree model, so the view
     // can expand its parent and select it.

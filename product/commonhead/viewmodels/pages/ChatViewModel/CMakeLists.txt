@@ -1,0 +1,3 @@
+add_subdirectory(ChatViewModelTypes)
+add_subdirectory(ChatViewModelApi)
+add_subdirectory(ChatViewModelImpl)

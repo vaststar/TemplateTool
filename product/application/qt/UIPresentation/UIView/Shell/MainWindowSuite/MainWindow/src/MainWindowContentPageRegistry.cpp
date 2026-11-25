@@ -12,6 +12,7 @@ MainWindowContentPageRegistry::MainWindowContentPageRegistry(QObject* parent)
     // preload=false (default): page is constructed the first time the user navigates to it,
     // then kept alive for subsequent visits.
     registerPage(static_cast<int>(PageId::Home),        QStringLiteral("UIView/PageViews/HomePage/qml/HomePage.qml"),                   /*preload=*/true);
+    registerPage(static_cast<int>(PageId::Chat),        QStringLiteral("UIView/PageViews/ChatPage/qml/ChatPage.qml"));
     registerPage(static_cast<int>(PageId::Contacts),    QStringLiteral("UIView/PageViews/ContactsPage/qml/ContactsPage.qml"));
     registerPage(static_cast<int>(PageId::Tasks),       QStringLiteral("UIView/PageViews/PlaceholderPage/qml/PlaceholderPage.qml"));
     registerPage(static_cast<int>(PageId::Credentials), QStringLiteral("UIView/PageViews/PlaceholderPage/qml/PlaceholderPage.qml"));

@@ -151,7 +151,11 @@ void ClientInfoManager::initializeAppClient()
         db::schema::RecordingSettingsTable{},
         db::schema::CameraGroupTable{},
         db::schema::CameraTable{},
-        db::schema::CameraDirectoryRelationTable{}
+        db::schema::CameraDirectoryRelationTable{},
+        db::schema::ChatGroupTable{},
+        db::schema::ChatConversationTable{},
+        db::schema::ChatDirectoryRelationTable{},
+        db::schema::ChatMessageTable{}
     };
     const auto result = dataWarehouseService->initializeDB(dbConfig, tables);
     if (result == InitializeDBResult::AlreadyExists)

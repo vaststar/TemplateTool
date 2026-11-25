@@ -11,6 +11,8 @@
 #include <ucf/services/ClientInfoService/ClientInfoServiceCreator.h>
 #include <ucf/services/ContactService/IContactService.h>
 #include <ucf/services/ContactService/ContactServiceCreator.h>
+#include <ucf/services/ChatService/ChatServiceCreator.h>
+#include <ucf/services/ChatService/IChatService.h>
 #include <ucf/services/ImageService/IImageService.h>
 #include <ucf/services/ImageService/ImageServiceCreator.h>
 #include <ucf/services/MediaService/IMediaService.h>
@@ -62,6 +64,7 @@ void ServiceFactory::createServices()
     coreFramework->registerService<ucf::service::IPerformanceService>(ucf::service::impl::createPerformanceService(coreFramework));
     coreFramework->registerService<ucf::service::INetworkService>(ucf::service::impl::createNetworkService(coreFramework));
     coreFramework->registerService<ucf::service::IContactService>(ucf::service::impl::createContactService(coreFramework));
+    coreFramework->registerService<ucf::service::IChatService>(ucf::service::impl::createChatService(coreFramework));
     coreFramework->registerService<ucf::service::IImageService>(ucf::service::impl::createImageService(coreFramework));
     coreFramework->registerService<ucf::service::IMediaService>(ucf::service::impl::createMediaService(coreFramework));
     coreFramework->registerService<ucf::service::IFeatureSettingsService>(ucf::service::impl::createFeatureSettingsService(coreFramework));

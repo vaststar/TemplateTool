@@ -136,4 +136,50 @@ CameraDirectoryRelationTable::CameraDirectoryRelationTable()
 {
 }
 
+ChatGroupTable::ChatGroupTable()
+    : ucf::service::model::DBTableModel(TableName, {
+        {IdField,       "TEXT UNIQUE NOT NULL"},
+        {NameField,     "TEXT NOT NULL"},
+        {PositionField, "INTEGER NOT NULL"}
+    })
+{
+}
+
+ChatConversationTable::ChatConversationTable()
+    : ucf::service::model::DBTableModel(TableName, {
+        {IdField,              "TEXT UNIQUE NOT NULL"},
+        {ContactIdField,       "TEXT NOT NULL"},
+        {NameField,            "TEXT NOT NULL"},
+        {PeerFingerprintField, "TEXT NOT NULL"},
+        {LastMessageField,     "TEXT NOT NULL"},
+        {UpdatedAtMsField,     "INTEGER NOT NULL"}
+    })
+{
+}
+
+ChatDirectoryRelationTable::ChatDirectoryRelationTable()
+    : ucf::service::model::DBTableModel(TableName, {
+        {RelationIdField,   "TEXT UNIQUE NOT NULL"},
+        {ChildIdField,      "TEXT UNIQUE NOT NULL"},
+        {ParentIdField,     "TEXT NOT NULL"},
+        {RelationTypeField, "INTEGER NOT NULL"}
+    })
+{
+}
+
+ChatMessageTable::ChatMessageTable()
+    : ucf::service::model::DBTableModel(TableName, {
+        {SequenceField,         "INTEGER PRIMARY KEY"},
+        {KeyField,              "TEXT UNIQUE NOT NULL"},
+        {IdField,               "TEXT NOT NULL"},
+        {ConversationIdField,   "TEXT NOT NULL"},
+        {TextField,             "TEXT NOT NULL"},
+        {TimestampMsField,      "INTEGER NOT NULL"},
+        {OutgoingField,         "INTEGER NOT NULL"},
+        {DeliveredField,        "INTEGER NOT NULL"},
+        {ReplyToMessageIdField, "TEXT NOT NULL"}
+    })
+{
+}
+
 }

@@ -141,6 +141,16 @@ void ContactsPageController::selectContact(const QString& contactId)
     }
 }
 
+void ContactsPageController::requestChatForCurrentContact()
+{
+    const auto info = getCurrentContactInfo();
+    if (!m_currentContactId.isEmpty() &&
+        info.value(QStringLiteral("kind")).toString() == QStringLiteral("person"))
+    {
+        emit chatRequested(m_currentContactId, info.value(QStringLiteral("name")).toString());
+    }
+}
+
 QVariantMap ContactsPageController::getContactInfo(const QString& contactId) const
 {
     if (contactId.isEmpty() || !mContactListViewModel)

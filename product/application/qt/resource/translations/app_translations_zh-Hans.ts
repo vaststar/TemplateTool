@@ -308,6 +308,384 @@ Close this terminal to cancel.</source>
     </message>
 </context>
 <context>
+    <name>ChatConversationList</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="25"/>
+        <source>Chat</source>
+        <translation>聊天</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="33"/>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="201"/>
+        <source>New group</source>
+        <translation>新建分组</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="42"/>
+        <source>Accept chat invitation</source>
+        <translation>接受聊天邀请</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="88"/>
+        <source>Group options</source>
+        <translation>分组选项</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="166"/>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="201"/>
+        <source>Rename group</source>
+        <translation>重命名分组</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="167"/>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="257"/>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="287"/>
+        <source>Delete group</source>
+        <translation>删除分组</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="224"/>
+        <source>Group name</source>
+        <translation>分组名称</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="241"/>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="282"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="245"/>
+        <source>Save</source>
+        <translation>保存</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="245"/>
+        <source>Create</source>
+        <translation>创建</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatConversationList.qml" line="274"/>
+        <source>Conversations in “%1” will move to Ungrouped.</source>
+        <translation>“%1”中的会话将移至未分组。</translation>
+    </message>
+</context>
+<context>
+    <name>ChatInviteDialog</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="32"/>
+        <source>Paste a reply</source>
+        <translation>粘贴回执</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="32"/>
+        <source>Accept a chat invitation</source>
+        <translation>接受聊天邀请</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="54"/>
+        <source>Paste the reply you received from your contact.</source>
+        <translation>粘贴联系人发给你的回执。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="55"/>
+        <source>Paste an invitation you were expecting. You can verify the other device before sending messages.</source>
+        <translation>请粘贴你预期收到的邀请。发送消息之前，你可以验证对方的设备。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="64"/>
+        <source>Reply text</source>
+        <translation>回执文本</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="64"/>
+        <source>Invitation text</source>
+        <translation>邀请文本</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="75"/>
+        <source>Link this invitation to %1</source>
+        <translation>将此邀请关联到 %1</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="93"/>
+        <source>Check the text and try again.</source>
+        <translation>请检查所粘贴的文本，然后重试。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="103"/>
+        <source>Paste</source>
+        <translation>粘贴</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="116"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="120"/>
+        <source>Connect</source>
+        <translation>连接</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatInviteDialog.qml" line="120"/>
+        <source>Accept invitation</source>
+        <translation>接受邀请</translation>
+    </message>
+</context>
+<context>
+    <name>ChatPageController</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/src/ChatPageController.cpp" line="24"/>
+        <source>The message to reply to is unavailable in this conversation.</source>
+        <translation>此会话中的原消息不可用。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/src/ChatPageController.cpp" line="69"/>
+        <source>Yesterday</source>
+        <translation>昨天</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/src/ChatPageController.cpp" line="104"/>
+        <source>Chat is unavailable.</source>
+        <translation>聊天功能暂不可用。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/src/ChatPageController.cpp" line="332"/>
+        <source>Ungrouped</source>
+        <translation>未分组</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/src/ChatPageController.cpp" line="348"/>
+        <source>Today</source>
+        <translation>今天</translation>
+    </message>
+</context>
+<context>
+    <name>ChatThread</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="43"/>
+        <source>Jump to original message</source>
+        <translation>跳转到原消息</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="70"/>
+        <source>Original message unavailable</source>
+        <translation>原消息不可用</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="82"/>
+        <source>Preparing invitation…</source>
+        <translation>正在准备邀请…</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="83"/>
+        <source>Waiting for reply</source>
+        <translation>等待回执</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="84"/>
+        <source>Connecting…</source>
+        <translation>正在连接…</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="85"/>
+        <source>Verify device</source>
+        <translation>验证设备</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="86"/>
+        <source>Connected</source>
+        <translation>已连接</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="87"/>
+        <source>Connection failed</source>
+        <translation>连接失败</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="88"/>
+        <source>Disconnected</source>
+        <translation>未连接</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="144"/>
+        <source>Loading chat…</source>
+        <translation>正在加载聊天…</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="145"/>
+        <source>Select a conversation.</source>
+        <translation>请选择一个会话。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="146"/>
+        <source>Open a person in Contacts to start a chat, or accept an invitation.</source>
+        <translation>在联系人中选择一位联系人发起聊天，或接受聊天邀请。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="199"/>
+        <source>Move to group</source>
+        <translation>移至分组</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="207"/>
+        <source>Disconnect</source>
+        <translation>断开连接</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="239"/>
+        <source>Preparing the information your contact needs to connect.</source>
+        <translation>正在准备联系人建立连接所需的信息。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="241"/>
+        <source>Send the invitation through a channel you already use. When your contact sends back a reply, paste it here.</source>
+        <translation>通过你已经在使用的渠道发送邀请。收到联系人的回执后，将它粘贴到这里。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="244"/>
+        <source>Send this reply to the person who sent the invitation.</source>
+        <translation>将这份回执发给邀请你的人。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="245"/>
+        <source>Waiting for the other device to connect.</source>
+        <translation>正在等待对方设备连接。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="247"/>
+        <source>Compare these fingerprints with your contact through a trusted channel. Your fingerprint should match the one they see for you, and theirs should match the one below.</source>
+        <translation>请通过可信渠道与联系人核对指纹。对方看到的你的指纹应与这里的本机指纹一致，对方的指纹也应与下方显示的一致。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="250"/>
+        <source>Create an invitation to connect when both devices are online.</source>
+        <translation>创建邀请后，可在两台设备都在线时建立连接。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="271"/>
+        <source>Your fingerprint</source>
+        <translation>本机指纹</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="282"/>
+        <source>Their fingerprint</source>
+        <translation>对方指纹</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="301"/>
+        <source>Create invitation</source>
+        <translation>创建邀请</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="307"/>
+        <source>Copy invitation</source>
+        <translation>复制邀请</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="310"/>
+        <source>Invitation copied</source>
+        <translation>已复制邀请</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="318"/>
+        <source>Paste reply</source>
+        <translation>粘贴回执</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="323"/>
+        <source>Copy reply</source>
+        <translation>复制回执</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="326"/>
+        <source>Reply copied</source>
+        <translation>已复制回执</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="334"/>
+        <source>Fingerprints match</source>
+        <translation>指纹一致</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="343"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="414"/>
+        <source>You</source>
+        <translation>你</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="444"/>
+        <source>%1 · %2</source>
+        <translation>%1 · %2</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="445"/>
+        <source>Delivered</source>
+        <translation>已送达</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="445"/>
+        <source>Pending</source>
+        <translation>待送达</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="459"/>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="526"/>
+        <source>Reply</source>
+        <translation>回复</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="477"/>
+        <source>Replying to %1</source>
+        <translation>正在回复 %1</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="477"/>
+        <source>yourself</source>
+        <translation>自己</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="478"/>
+        <source>Replying to a message</source>
+        <translation>正在回复消息</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="485"/>
+        <source>Cancel reply</source>
+        <translation>取消回复</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="501"/>
+        <source>Message</source>
+        <translation>消息</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="502"/>
+        <source>Write a message…</source>
+        <translation>输入消息…</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="503"/>
+        <source>Write a message to send when connected…</source>
+        <translation>输入消息，连接后发送…</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="504"/>
+        <source>Verify the device to send a message</source>
+        <translation>验证设备后即可发送消息</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ChatPage/qml/ChatThread.qml" line="509"/>
+        <source>Send</source>
+        <translation>发送</translation>
+    </message>
+</context>
+<context>
     <name>ContactDeleteDialog</name>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactDeleteDialog.qml" line="21"/>
@@ -466,42 +844,42 @@ Close this terminal to cancel.</source>
 <context>
     <name>ContactsPageController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="227"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="237"/>
         <source>Add contact</source>
         <translation>新增联系人</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="232"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="242"/>
         <source>Add group</source>
         <translation>新增分组</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="243"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="253"/>
         <source>Rename group</source>
         <translation>重命名分组</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="244"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="254"/>
         <source>Edit contact</source>
         <translation>编辑联系人</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="249"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="259"/>
         <source>Delete</source>
         <translation>删除</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="410"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="420"/>
         <source>Save failed</source>
         <translation>保存失败</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="411"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="421"/>
         <source>Changes were applied to the current page, but could not be written to the local database.</source>
         <translation>修改已应用到当前页面，但未能写入本地数据库。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="412"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="422"/>
         <source>These changes may be lost after the app closes. Please try again later.</source>
         <translation>关闭应用后这些修改可能丢失，请稍后重新操作。</translation>
     </message>
@@ -607,6 +985,14 @@ Close this terminal to cancel.</source>
         <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/DepartmentDetailBody.qml" line="30"/>
         <source>Headcount</source>
         <translation>人数</translation>
+    </message>
+</context>
+<context>
+    <name>DetailHeader</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/DetailHeader.qml" line="69"/>
+        <source>Send message</source>
+        <translation>发消息</translation>
     </message>
 </context>
 <context>
@@ -2096,12 +2482,12 @@ Double-click a rule to view details.</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="77"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="78"/>
         <source>Show Main Window</source>
         <translation>显示主窗口</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="76"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="77"/>
         <source>Quit</source>
         <translation>退出</translation>
     </message>
@@ -2111,7 +2497,7 @@ Double-click a rule to view details.</source>
         <translation>我的测试窗口标题栏</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="70"/>
+        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="76"/>
         <source>my test window aa</source>
         <translation>我的测试窗口 aa</translation>
     </message>
@@ -2181,211 +2567,216 @@ Double-click a rule to view details.</source>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="36"/>
+        <source>Chat</source>
+        <translation>聊天</translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="37"/>
         <source>Contacts</source>
         <translation>联系人</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="37"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="38"/>
         <source>Tasks</source>
         <translation>计划</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="38"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="39"/>
         <source>Credentials</source>
         <translation>证件</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="39"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="40"/>
         <source>Toolbox</source>
         <translation>工具箱</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="40"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="41"/>
         <source>Mini Apps</source>
         <translation>迷你应用</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="41"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="42"/>
         <source>Settings</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="42"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="43"/>
         <source>Help</source>
         <translation>帮助</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="43"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="44"/>
         <source>Check for Updates</source>
         <translation>检查更新</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="44"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="45"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="45"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="46"/>
         <source>Text Processing</source>
         <translation>文本处理</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="46"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="47"/>
         <source>Date &amp; Time</source>
         <translation>时间日期</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="47"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="48"/>
         <source>Generators</source>
         <translation>生成器</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="48"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="49"/>
         <source>Base64 Encode/Decode</source>
         <translation>Base64 编解码</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="49"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="50"/>
         <source>JSON Formatter</source>
         <translation>JSON 格式化</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="50"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="51"/>
         <source>Timestamp Converter</source>
         <translation>时间戳转换</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="51"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="52"/>
         <source>UUID Generator</source>
         <translation>UUID 生成</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="52"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="53"/>
         <source>Network</source>
         <translation>网络</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="53"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="54"/>
         <source>Network Proxy</source>
         <translation>网络代理</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="54"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="55"/>
         <source>Media</source>
         <translation>媒体</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="55"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="56"/>
         <source>Screen Capture</source>
         <translation>屏幕捕获</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="56"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="57"/>
         <source>Screenshot</source>
         <translation>截图</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="57"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="58"/>
         <source>Screen Recording</source>
         <translation>录屏</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="58"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="59"/>
         <source>JSON is valid</source>
         <translation>JSON 格式有效</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="59"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="60"/>
         <source>Invalid timestamp</source>
         <translation>无效的时间戳</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="60"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="61"/>
         <source>DateTime format parse failed</source>
         <translation>日期时间格式解析失败</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="61"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="62"/>
         <source>Invalid datetime</source>
         <translation>无效的日期时间</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="62"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="63"/>
         <source>General</source>
         <translation>通用</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="63"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="64"/>
         <source>Appearance</source>
         <translation>外观</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="64"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="65"/>
         <source>Language</source>
         <translation>语言</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="65"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="66"/>
         <source>Install failed</source>
         <translation>安装失败</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="66"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="67"/>
         <source>The selected folder no longer exists.</source>
         <translation>所选文件夹已不存在。</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="67"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="68"/>
         <source>The folder does not contain a valid mini app. It must include a manifest.json with matching id, name and version.</source>
         <translation>该文件夹不包含有效的迷你应用。其中必须包含 manifest.json，且 id、name 和 version 字段必须符合要求。</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="68"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="69"/>
         <source>This mini app is already installed.</source>
         <translation>此迷你应用已安装。</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="69"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="70"/>
         <source>Storage is not available right now. Please try again later.</source>
         <translation>存储当前不可用，请稍后重试。</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="70"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="71"/>
         <source>Could not copy the mini app files. Check available disk space and permissions.</source>
         <translation>无法复制迷你应用文件。请检查可用磁盘空间和权限。</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="71"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="72"/>
         <source>Could not install the mini app.</source>
         <translation>无法安装迷你应用。</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="72"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="73"/>
         <source>Uninstall failed</source>
         <translation>卸载失败</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="73"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="74"/>
         <source>This mini app is no longer installed.</source>
         <translation>此迷你应用已不在已安装列表中。</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="74"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="75"/>
         <source>Could not remove the mini app files. Check permissions and try again.</source>
         <translation>无法删除迷你应用文件。请检查权限后重试。</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="75"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="76"/>
         <source>Could not uninstall the mini app.</source>
         <translation>无法卸载迷你应用。</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="89"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="90"/>
         <source>{{0}} of {{1}} completed</source>
         <translation>{{0}} / {{1}} 已完成</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="90"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="91"/>
         <source>test param {{0}}, only 1 param</source>
         <translation>测试参数 {{0}}，仅 1 个参数</translation>
     </message>

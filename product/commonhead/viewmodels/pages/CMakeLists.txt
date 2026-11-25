@@ -1,4 +1,5 @@
 add_subdirectory(ContactListViewModel)
+add_subdirectory(ChatViewModel)
 add_subdirectory(Base64ToolViewModel)
 add_subdirectory(ToolsViewModel)
 add_subdirectory(JsonToolViewModel)

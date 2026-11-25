@@ -27,6 +27,18 @@
         "animated": false
       },
       {
+        "token": "nav_chat",
+        "path": "assets/images/nav_icons/nav_chat.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
+        "token": "nav_chat_selected",
+        "path": "assets/images/nav_icons/nav_chat_selected.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
         "token": "nav_contacts",
         "path": "assets/images/nav_icons/nav_contacts.svg",
         "format": "svg",

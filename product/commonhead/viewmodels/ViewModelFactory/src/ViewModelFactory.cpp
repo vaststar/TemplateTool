@@ -6,6 +6,7 @@
 #include <commonhead/viewmodels/ClientInfoViewModel/ClientInfoViewModelCreator.h>
 #include <commonhead/viewmodels/PermissionViewModel/PermissionViewModelCreator.h>
 #include <commonhead/viewmodels/ContactListViewModel/ContactListViewModelCreator.h>
+#include <commonhead/viewmodels/ChatViewModel/ChatViewModelCreator.h>
 #include <commonhead/viewmodels/MainWindowViewModel/MainWindowViewModelCreator.h>
 #include <commonhead/viewmodels/MediaCameraViewModel/MediaCameraViewModelCreator.h>
 #include <commonhead/viewmodels/CameraDirectoryViewModel/CameraDirectoryViewModelCreator.h>
@@ -65,6 +66,11 @@ std::shared_ptr<commonHead::viewModels::IPermissionViewModel> ViewModelFactory::
 std::shared_ptr<commonHead::viewModels::IContactListViewModel> ViewModelFactory::createContactListViewModelInstance() const
 {
     return impl::createContactListViewModel(mCommonHeadFramework);
+}
+
+std::shared_ptr<commonHead::viewModels::IChatViewModel> ViewModelFactory::createChatViewModelInstance() const
+{
+    return impl::createChatViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> ViewModelFactory::createMainWindowViewModelInstance() const

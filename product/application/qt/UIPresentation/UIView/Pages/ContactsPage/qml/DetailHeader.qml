@@ -7,6 +7,7 @@ import UIResourceLoader 1.0
 RowLayout {
     id: root
     property var info  // expects { name, kind, kindLabel, status }
+    signal messageRequested()
 
     Layout.fillWidth: true
     spacing: 12
@@ -60,5 +61,12 @@ RowLayout {
                 colorEnum: UIColorToken.Sidebar_Item_Text
             }
         }
+    }
+
+    UTButton {
+        visible: root.info && root.info.kind === "person"
+        appearance: UTButton.Primary
+        text: qsTr("Send message")
+        onClicked: root.messageRequested()
     }
 }

@@ -33,6 +33,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     MediaCameraViewModelImpl
     CameraDirectoryViewModelImpl
     ContactListViewModelImpl
+    ChatViewModelImpl
     MiniAppListViewModelImpl
     MiniAppRuntimeViewModelImpl
     ScreenshotViewModelImpl

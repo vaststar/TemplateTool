@@ -1,7 +1,11 @@
 #include "MainWindow/MainWindowController.h"
 #include "MainWindow/MainWindowContentPageRegistry.h"
+#include "MainWindowSideBar/MainWindowSideBarController.h"
+#include "ChatPage/ChatPageController.h"
+#include "ContactsPage/ContactsPageController.h"
 
 #include <commonhead/viewmodels/MainWindowViewModel/IMainWindowViewModel.h>
+#include <commonhead/viewmodels/SideBarViewModel/SideBarModel.h>
 
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <UIFabrication/IUIViewFactory.h>
@@ -15,6 +19,8 @@
 
 #include <QCoreApplication>
 #include <QMetaObject>
+
+#include <utility>
 
 #ifdef Q_OS_WIN
 #include <QtCore/qt_windows.h>
@@ -116,9 +122,46 @@ void MainWindowController::onLogsPackComplete(bool success, const QString& archi
 
 void MainWindowController::onSetupController(UIViewController* controller)
 {
-    Q_UNUSED(controller);
-    // Connect child-controller signals here. This hook runs before the child
-    // controller's init(), so initialization-time signals cannot be missed.
+    if (auto* sideBar = qobject_cast<MainWindowSideBarController*>(controller))
+    {
+        m_sideBarController = sideBar;
+    }
+    else if (auto* contacts = qobject_cast<ContactsPageController*>(controller))
+    {
+        connect(contacts, &ContactsPageController::chatRequested,
+                this, &MainWindowController::openChatForContact);
+    }
+    else if (auto* chat = qobject_cast<ChatPageController*>(controller))
+    {
+        connect(chat, &UIViewController::controllerInitialized, this, [this, chat] {
+            m_chatPageController = chat;
+            deliverPendingChatContact();
+        });
+    }
+}
+
+void MainWindowController::openChatForContact(const QString& contactId, const QString& displayName)
+{
+    m_pendingChatContactId = contactId;
+    m_pendingChatDisplayName = displayName;
+    if (m_sideBarController)
+    {
+        using PageId = commonHead::viewModels::model::PageId;
+        m_sideBarController->navigateTo(static_cast<int>(PageId::Chat));
+    }
+    deliverPendingChatContact();
+}
+
+void MainWindowController::deliverPendingChatContact()
+{
+    if (!m_chatPageController || m_pendingChatContactId.isEmpty())
+    {
+        return;
+    }
+
+    const auto contactId = std::exchange(m_pendingChatContactId, {});
+    const auto displayName = std::exchange(m_pendingChatDisplayName, {});
+    m_chatPageController->openContact(contactId, displayName);
 }
 
 void MainWindowController::createUpgradeController()

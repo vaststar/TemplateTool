@@ -22,6 +22,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     NetworkServiceApi
     ClientInfoServiceApi
     ContactServiceApi
+    ChatServiceApi
     CameraDirectoryServiceApi
     MediaServiceApi
     ImageServiceApi

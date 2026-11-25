@@ -8,6 +8,7 @@
 #include <ucf/services/NetworkService/INetworkService.h>
 #include <ucf/services/ClientInfoService/IClientInfoService.h>
 #include <ucf/services/ContactService/IContactService.h>
+#include <ucf/services/ChatService/IChatService.h>
 #include <ucf/services/CameraDirectoryService/ICameraDirectoryService.h>
 #include <ucf/services/ImageService/IImageService.h>
 #include <ucf/services/MediaService/IMediaService.h>
@@ -75,6 +76,15 @@ std::weak_ptr<ucf::service::IContactService> ServiceLocator::getContactService()
     if (auto coreFramework = mCoreFramework.lock())
     {
         return coreFramework->getService<ucf::service::IContactService>();
+    }
+    return {};
+}
+
+std::weak_ptr<ucf::service::IChatService> ServiceLocator::getChatService() const
+{
+    if (auto coreFramework = mCoreFramework.lock())
+    {
+        return coreFramework->getService<ucf::service::IChatService>();
     }
     return {};
 }

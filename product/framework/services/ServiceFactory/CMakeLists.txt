@@ -28,6 +28,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     MediaServiceImpl
     ImageServiceImpl
     ContactServiceImpl
+    ChatServiceImpl
     NetworkServiceImpl
     ClientInfoServiceImpl
     DataWarehouseServiceImpl

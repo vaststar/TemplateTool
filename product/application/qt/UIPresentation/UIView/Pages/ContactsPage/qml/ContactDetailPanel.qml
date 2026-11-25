@@ -32,6 +32,7 @@ Item {
         DetailHeader {
             Layout.fillWidth: true
             info: contactDetailPanel.info
+            onMessageRequested: contactDetailPanel.controller.requestChatForCurrentContact()
         }
 
         Rectangle {

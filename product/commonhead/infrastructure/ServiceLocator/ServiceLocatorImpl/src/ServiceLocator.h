@@ -19,6 +19,7 @@ public:
     [[nodiscard]] std::weak_ptr<ucf::service::INetworkService> getNetworkService() const override;
     [[nodiscard]] std::weak_ptr<ucf::service::IClientInfoService> getClientInfoService() const override;
     [[nodiscard]] std::weak_ptr<ucf::service::IContactService> getContactService() const override;
+    [[nodiscard]] std::weak_ptr<ucf::service::IChatService> getChatService() const override;
     [[nodiscard]] std::weak_ptr<ucf::service::ICameraDirectoryService> getCameraDirectoryService() const override;
     [[nodiscard]] std::weak_ptr<ucf::service::IImageService> getImageService() const override;
     [[nodiscard]] std::weak_ptr<ucf::service::IMediaService> getMediaService() const override;

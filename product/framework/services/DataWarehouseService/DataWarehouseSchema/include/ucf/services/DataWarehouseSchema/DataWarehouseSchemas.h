@@ -152,4 +152,51 @@ struct DATA_WAREHOUSE_SCHEMA_API CameraDirectoryRelationTable: public ucf::servi
     static constexpr auto ParentIdField     = "PARENT_ID";
     static constexpr auto RelationTypeField = "RELATION_TYPE";
 };
+
+// The V2 tables give chat a fresh schema alongside other application data.
+struct DATA_WAREHOUSE_SCHEMA_API ChatGroupTable: public ucf::service::model::DBTableModel
+{
+    ChatGroupTable();
+    static constexpr auto TableName = "ChatGroupV2";
+    static constexpr auto IdField = "GROUP_ID";
+    static constexpr auto NameField = "NAME";
+    static constexpr auto PositionField = "POSITION";
+};
+
+struct DATA_WAREHOUSE_SCHEMA_API ChatConversationTable: public ucf::service::model::DBTableModel
+{
+    ChatConversationTable();
+    static constexpr auto TableName = "ChatConversationV2";
+    static constexpr auto IdField = "CONVERSATION_ID";
+    static constexpr auto ContactIdField = "CONTACT_ID";
+    static constexpr auto NameField = "NAME";
+    static constexpr auto PeerFingerprintField = "PEER_FINGERPRINT";
+    static constexpr auto LastMessageField = "LAST_MESSAGE";
+    static constexpr auto UpdatedAtMsField = "UPDATED_AT_MS";
+};
+
+struct DATA_WAREHOUSE_SCHEMA_API ChatDirectoryRelationTable: public ucf::service::model::DBTableModel
+{
+    ChatDirectoryRelationTable();
+    static constexpr auto TableName = "ChatDirectoryRelationV2";
+    static constexpr auto RelationIdField = "RELATION_ID";
+    static constexpr auto ChildIdField = "CHILD_ID";
+    static constexpr auto ParentIdField = "PARENT_ID";
+    static constexpr auto RelationTypeField = "RELATION_TYPE";
+};
+
+struct DATA_WAREHOUSE_SCHEMA_API ChatMessageTable: public ucf::service::model::DBTableModel
+{
+    ChatMessageTable();
+    static constexpr auto TableName = "ChatMessageV2";
+    static constexpr auto SequenceField = "LOCAL_SEQUENCE";
+    static constexpr auto KeyField = "MESSAGE_KEY";
+    static constexpr auto IdField = "MESSAGE_ID";
+    static constexpr auto ConversationIdField = "CONVERSATION_ID";
+    static constexpr auto TextField = "MESSAGE_TEXT";
+    static constexpr auto TimestampMsField = "TIMESTAMP_MS";
+    static constexpr auto OutgoingField = "OUTGOING";
+    static constexpr auto DeliveredField = "DELIVERED";
+    static constexpr auto ReplyToMessageIdField = "REPLY_TO_MESSAGE_ID";
+};
 }
